@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -75,6 +75,11 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
   );
 
   const [log, setLog] = useState<LoggedExercise[]>(initialLog);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
+  const cardOffsets = useRef<Record<number, number>>({});
+
+  const isLastExercise = currentIndex >= orderedExercises.length - 1;
 
   if (!plan) {
     return (
@@ -101,6 +106,22 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
     });
   }
 
+  function goToExercise(index: number) {
+    setCurrentIndex(index);
+    const y = cardOffsets.current[index];
+    if (y !== undefined) {
+      scrollRef.current?.scrollTo({ y: Math.max(0, y - 16), animated: true });
+    }
+  }
+
+  function handleNext() {
+    if (isLastExercise) {
+      handleFinish();
+      return;
+    }
+    goToExercise(currentIndex + 1);
+  }
+
   async function handleFinish() {
     const durationMinutes = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
     const session: WorkoutSession = {
@@ -118,14 +139,21 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.list}>
+      <ScrollView ref={scrollRef} contentContainerStyle={styles.list}>
         <Text style={styles.title}>{plan.name}</Text>
         {log.map((exercise, exerciseIndex) => {
           const prevSets = previousByExercise.get(exercise.exerciseId) ?? [];
+          const isCurrent = exerciseIndex === currentIndex;
+          const isDone = exerciseIndex < currentIndex;
           return (
-            <View
+            <TouchableOpacity
               key={exercise.exerciseId}
-              style={[styles.card, exerciseIndex === 0 && styles.currentCard]}
+              activeOpacity={0.8}
+              onLayout={(e) => {
+                cardOffsets.current[exerciseIndex] = e.nativeEvent.layout.y;
+              }}
+              onPress={() => goToExercise(exerciseIndex)}
+              style={[styles.card, isCurrent && styles.currentCard, isDone && styles.doneCard]}
             >
               <View style={styles.cardHeader}>
                 {(() => {
@@ -140,6 +168,7 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
                   );
                 })()}
                 <Text style={styles.cardTitle}>{exercise.name}</Text>
+                {isDone && <Text style={styles.doneBadge}>✓ erledigt</Text>}
               </View>
               {exercise.sets.map((set, setIndex) => {
                 const prev = prevSets[setIndex];
@@ -172,12 +201,17 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
                   </View>
                 );
               })}
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>
-      <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
-        <Text style={styles.finishButtonText}>Workout beenden</Text>
+      <TouchableOpacity
+        style={[styles.finishButton, isLastExercise && styles.finishButtonFinal]}
+        onPress={handleNext}
+      >
+        <Text style={styles.finishButtonText}>
+          {isLastExercise ? 'Workout beenden' : 'Nächste Übung →'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -189,7 +223,9 @@ const styles = StyleSheet.create({
   title: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 16 },
   card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 12 },
   currentCard: { borderWidth: 2, borderColor: '#ff5a3c' },
+  doneCard: { opacity: 0.5 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  doneBadge: { color: '#22c55e', fontSize: 12, fontWeight: '600', marginLeft: 'auto' },
   exerciseThumb: { width: 40, height: 40, borderRadius: 10 },
   exerciseThumbPlaceholder: {
     backgroundColor: '#0f1115',
@@ -218,10 +254,11 @@ const styles = StyleSheet.create({
     bottom: 24,
     left: 16,
     right: 16,
-    backgroundColor: '#22c55e',
+    backgroundColor: '#ff5a3c',
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
   },
-  finishButtonText: { color: '#0f1115', fontSize: 16, fontWeight: '700' },
+  finishButtonFinal: { backgroundColor: '#22c55e' },
+  finishButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });
