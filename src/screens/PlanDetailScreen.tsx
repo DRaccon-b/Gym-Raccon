@@ -37,7 +37,7 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
       />
       <TouchableOpacity
         style={styles.startButton}
-        onPress={() => navigation.navigate('ActiveWorkout', { planId: plan.id })}
+        onPress={() => navigation.navigate('StartWorkout', { planId: plan.id })}
       >
         <Text style={styles.startButtonText}>Workout starten</Text>
       </TouchableOpacity>

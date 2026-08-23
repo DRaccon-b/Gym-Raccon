@@ -11,31 +11,66 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
-import { LoggedExercise, LoggedSet, WorkoutSession } from '../types';
+import { Exercise, LoggedExercise, LoggedSet, WorkoutSession } from '../types';
+import { adjustWeightForEnergy, findLastLoggedExercise } from '../utils/workoutHistory';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ActiveWorkout'>;
+
+type PreviousSet = { reps: number; weightKg: number } | undefined;
 
 function makeId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function orderExercises(exercises: Exercise[], startExerciseId: string): Exercise[] {
+  const startIndex = exercises.findIndex((e) => e.id === startExerciseId);
+  if (startIndex <= 0) return exercises;
+  return [exercises[startIndex], ...exercises.slice(0, startIndex), ...exercises.slice(startIndex + 1)];
+}
+
 export default function ActiveWorkoutScreen({ route, navigation }: Props) {
-  const { planId } = route.params;
-  const { plans, addSession } = useAppData();
+  const { planId, startExerciseId, energyLevel } = route.params;
+  const { plans, sessions, addSession } = useAppData();
   const plan = plans.find((p) => p.id === planId);
   const startedAt = useMemo(() => Date.now(), []);
 
+  const orderedExercises = useMemo(
+    () => (plan ? orderExercises(plan.exercises, startExerciseId) : []),
+    [plan, startExerciseId]
+  );
+
+  const previousByExercise = useMemo(() => {
+    const map = new Map<string, PreviousSet[]>();
+    orderedExercises.forEach((ex) => {
+      const lastLogged = findLastLoggedExercise(ex.name, sessions);
+      const prevSets: PreviousSet[] = Array.from({ length: ex.sets }, (_, i) => {
+        if (!lastLogged || lastLogged.sets.length === 0) return undefined;
+        return lastLogged.sets[i] ?? lastLogged.sets[lastLogged.sets.length - 1];
+      });
+      map.set(ex.id, prevSets);
+    });
+    return map;
+  }, [orderedExercises, sessions]);
+
   const initialLog: LoggedExercise[] = useMemo(
     () =>
-      (plan?.exercises ?? []).map((ex) => ({
-        exerciseId: ex.id,
-        name: ex.name,
-        sets: Array.from({ length: ex.sets }, () => ({
-          reps: ex.reps,
-          weightKg: ex.weightKg ?? 0,
-        })),
-      })),
-    [plan]
+      orderedExercises.map((ex) => {
+        const prevSets = previousByExercise.get(ex.id) ?? [];
+        return {
+          exerciseId: ex.id,
+          name: ex.name,
+          sets: Array.from({ length: ex.sets }, (_, i) => {
+            const prev = prevSets[i];
+            const baseWeight = prev?.weightKg ?? ex.weightKg ?? 0;
+            const baseReps = prev?.reps ?? ex.reps;
+            return {
+              reps: baseReps,
+              weightKg: adjustWeightForEnergy(baseWeight, energyLevel),
+            };
+          }),
+        };
+      }),
+    [orderedExercises, previousByExercise, energyLevel]
   );
 
   const [log, setLog] = useState<LoggedExercise[]>(initialLog);
@@ -84,32 +119,48 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.list}>
         <Text style={styles.title}>{plan.name}</Text>
-        {log.map((exercise, exerciseIndex) => (
-          <View key={exercise.exerciseId} style={styles.card}>
-            <Text style={styles.cardTitle}>{exercise.name}</Text>
-            {exercise.sets.map((set, setIndex) => (
-              <View key={setIndex} style={styles.setRow}>
-                <Text style={styles.setLabel}>Satz {setIndex + 1}</Text>
-                <View style={styles.setInputs}>
-                  <TextInput
-                    style={styles.setInput}
-                    keyboardType="numeric"
-                    value={String(set.reps)}
-                    onChangeText={(v) => updateSet(exerciseIndex, setIndex, 'reps', v)}
-                  />
-                  <Text style={styles.setUnit}>Wdh.</Text>
-                  <TextInput
-                    style={styles.setInput}
-                    keyboardType="numeric"
-                    value={String(set.weightKg)}
-                    onChangeText={(v) => updateSet(exerciseIndex, setIndex, 'weightKg', v)}
-                  />
-                  <Text style={styles.setUnit}>kg</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        ))}
+        {log.map((exercise, exerciseIndex) => {
+          const prevSets = previousByExercise.get(exercise.exerciseId) ?? [];
+          return (
+            <View
+              key={exercise.exerciseId}
+              style={[styles.card, exerciseIndex === 0 && styles.currentCard]}
+            >
+              <Text style={styles.cardTitle}>{exercise.name}</Text>
+              {exercise.sets.map((set, setIndex) => {
+                const prev = prevSets[setIndex];
+                return (
+                  <View key={setIndex} style={styles.setBlock}>
+                    <View style={styles.setRow}>
+                      <Text style={styles.setLabel}>Satz {setIndex + 1}</Text>
+                      <View style={styles.setInputs}>
+                        <TextInput
+                          style={styles.setInput}
+                          keyboardType="numeric"
+                          value={String(set.reps)}
+                          onChangeText={(v) => updateSet(exerciseIndex, setIndex, 'reps', v)}
+                        />
+                        <Text style={styles.setUnit}>Wdh.</Text>
+                        <TextInput
+                          style={styles.setInput}
+                          keyboardType="numeric"
+                          value={String(set.weightKg)}
+                          onChangeText={(v) => updateSet(exerciseIndex, setIndex, 'weightKg', v)}
+                        />
+                        <Text style={styles.setUnit}>kg</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.prevText}>
+                      {prev
+                        ? `Letztes Mal: ${prev.weightKg} kg × ${prev.reps} Wdh.`
+                        : 'Letztes Mal: keine Daten'}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          );
+        })}
       </ScrollView>
       <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
         <Text style={styles.finishButtonText}>Workout beenden</Text>
@@ -123,8 +174,10 @@ const styles = StyleSheet.create({
   list: { padding: 16, paddingBottom: 96 },
   title: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 16 },
   card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 12 },
+  currentCard: { borderWidth: 2, borderColor: '#ff5a3c' },
   cardTitle: { color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 10 },
-  setRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  setBlock: { marginBottom: 10 },
+  setRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   setLabel: { color: '#9aa0ac', fontSize: 14, width: 60 },
   setInputs: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   setInput: {
@@ -137,6 +190,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   setUnit: { color: '#6b7280', fontSize: 12 },
+  prevText: { color: '#6b7280', fontSize: 12, marginTop: 4, marginLeft: 60 },
   emptyText: { color: '#9aa0ac', textAlign: 'center', marginTop: 40 },
   finishButton: {
     position: 'absolute',

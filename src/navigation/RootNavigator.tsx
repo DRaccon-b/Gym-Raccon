@@ -5,6 +5,7 @@ import { Text } from 'react-native';
 import PlansScreen from '../screens/PlansScreen';
 import CreatePlanScreen from '../screens/CreatePlanScreen';
 import PlanDetailScreen from '../screens/PlanDetailScreen';
+import StartWorkoutScreen from '../screens/StartWorkoutScreen';
 import ActiveWorkoutScreen from '../screens/ActiveWorkoutScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import type { RootStackParamList } from './types';
@@ -28,6 +29,11 @@ function PlansStack() {
         options={{ title: 'Neuer Plan' }}
       />
       <Stack.Screen name="PlanDetail" component={PlanDetailScreen} options={{ title: 'Plan' }} />
+      <Stack.Screen
+        name="StartWorkout"
+        component={StartWorkoutScreen}
+        options={{ title: 'Workout vorbereiten' }}
+      />
       <Stack.Screen
         name="ActiveWorkout"
         component={ActiveWorkoutScreen}
