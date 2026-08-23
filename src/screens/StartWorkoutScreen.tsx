@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
@@ -65,6 +65,13 @@ export default function StartWorkoutScreen({ route, navigation }: Props) {
           style={[styles.exerciseChip, startExerciseId === ex.id && styles.exerciseChipSelected]}
           onPress={() => setStartExerciseId(ex.id)}
         >
+          {ex.photoUri ? (
+            <Image source={{ uri: ex.photoUri }} style={styles.exerciseThumb} />
+          ) : (
+            <View style={[styles.exerciseThumb, styles.exerciseThumbPlaceholder]}>
+              <Text style={{ fontSize: 16 }}>🏋️</Text>
+            </View>
+          )}
           <Text
             style={[
               styles.exerciseChipText,
@@ -103,13 +110,22 @@ const styles = StyleSheet.create({
   energyHint: { color: '#9aa0ac', fontSize: 13, marginTop: 2 },
   checkmark: { color: '#ff5a3c', fontSize: 18, fontWeight: '700' },
   exerciseChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     backgroundColor: '#1b1e26',
     borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     marginBottom: 8,
     borderWidth: 2,
     borderColor: 'transparent',
+  },
+  exerciseThumb: { width: 36, height: 36, borderRadius: 9 },
+  exerciseThumbPlaceholder: {
+    backgroundColor: '#0f1115',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   exerciseChipSelected: { borderColor: '#ff5a3c', backgroundColor: '#2a1e1a' },
   exerciseChipText: { color: '#fff', fontSize: 15 },

@@ -4,6 +4,7 @@ export type Exercise = {
   sets: number;
   reps: number;
   weightKg?: number;
+  photoUri?: string;
 };
 
 export type WorkoutPlan = {

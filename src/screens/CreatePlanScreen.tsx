@@ -12,6 +12,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
 import { Exercise, WorkoutPlan } from '../types';
+import ExercisePhotoPicker from '../components/ExercisePhotoPicker';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePlan'>;
 
@@ -26,6 +27,7 @@ export default function CreatePlanScreen({ navigation }: Props) {
   const [exerciseName, setExerciseName] = useState('');
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
+  const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
 
   function handleAddExercise() {
     if (!exerciseName.trim()) return;
@@ -36,15 +38,21 @@ export default function CreatePlanScreen({ navigation }: Props) {
         name: exerciseName.trim(),
         sets: parseInt(sets, 10) || 1,
         reps: parseInt(reps, 10) || 1,
+        photoUri,
       },
     ]);
     setExerciseName('');
     setSets('3');
     setReps('10');
+    setPhotoUri(undefined);
   }
 
   function handleRemoveExercise(id: string) {
     setExercises((prev) => prev.filter((e) => e.id !== id));
+  }
+
+  function handleChangeExercisePhoto(id: string, uri: string | undefined) {
+    setExercises((prev) => prev.map((e) => (e.id === id ? { ...e, photoUri: uri } : e)));
   }
 
   async function handleSavePlan() {
@@ -80,7 +88,11 @@ export default function CreatePlanScreen({ navigation }: Props) {
       <Text style={styles.sectionTitle}>Übungen</Text>
       {exercises.map((ex) => (
         <View key={ex.id} style={styles.exerciseRow}>
-          <Text style={styles.exerciseText}>
+          <ExercisePhotoPicker
+            photoUri={ex.photoUri}
+            onChange={(uri) => handleChangeExercisePhoto(ex.id, uri)}
+          />
+          <Text style={[styles.exerciseText, { flex: 1, marginLeft: 12 }]}>
             {ex.name} — {ex.sets}×{ex.reps}
           </Text>
           <TouchableOpacity onPress={() => handleRemoveExercise(ex.id)}>
@@ -90,13 +102,16 @@ export default function CreatePlanScreen({ navigation }: Props) {
       ))}
 
       <View style={styles.addExerciseBox}>
-        <TextInput
-          style={styles.input}
-          placeholder="Übungsname (z. B. Bankdrücken)"
-          placeholderTextColor="#6b7280"
-          value={exerciseName}
-          onChangeText={setExerciseName}
-        />
+        <View style={styles.row}>
+          <ExercisePhotoPicker photoUri={photoUri} onChange={setPhotoUri} size={64} />
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Übungsname (z. B. Bankdrücken)"
+            placeholderTextColor="#6b7280"
+            value={exerciseName}
+            onChangeText={setExerciseName}
+          />
+        </View>
         <View style={styles.row}>
           <View style={styles.rowItem}>
             <Text style={styles.label}>Sätze</Text>
@@ -154,7 +169,7 @@ const styles = StyleSheet.create({
   exerciseText: { color: '#fff', fontSize: 15 },
   removeText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
   addExerciseBox: { marginTop: 12, backgroundColor: '#151821', borderRadius: 12, padding: 12 },
-  row: { flexDirection: 'row', gap: 12 },
+  row: { flexDirection: 'row', gap: 12, alignItems: 'center', marginTop: 12 },
   rowItem: { flex: 1 },
   addButton: {
     marginTop: 12,

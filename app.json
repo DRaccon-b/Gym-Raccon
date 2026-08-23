@@ -20,6 +20,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Erlaube Zugriff auf deine Fotos, um Übungsbilder auszuwählen.",
+          "cameraPermission": "Erlaube Zugriff auf die Kamera, um ein Foto der Übung aufzunehmen."
+        }
+      ]
+    ]
   }
 }

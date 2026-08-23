@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Image,
   ScrollView,
   StyleSheet,
   Alert,
@@ -126,7 +127,20 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
               key={exercise.exerciseId}
               style={[styles.card, exerciseIndex === 0 && styles.currentCard]}
             >
-              <Text style={styles.cardTitle}>{exercise.name}</Text>
+              <View style={styles.cardHeader}>
+                {(() => {
+                  const photoUri = orderedExercises.find((e) => e.id === exercise.exerciseId)
+                    ?.photoUri;
+                  return photoUri ? (
+                    <Image source={{ uri: photoUri }} style={styles.exerciseThumb} />
+                  ) : (
+                    <View style={[styles.exerciseThumb, styles.exerciseThumbPlaceholder]}>
+                      <Text style={{ fontSize: 18 }}>🏋️</Text>
+                    </View>
+                  );
+                })()}
+                <Text style={styles.cardTitle}>{exercise.name}</Text>
+              </View>
               {exercise.sets.map((set, setIndex) => {
                 const prev = prevSets[setIndex];
                 return (
@@ -175,7 +189,14 @@ const styles = StyleSheet.create({
   title: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 16 },
   card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 12 },
   currentCard: { borderWidth: 2, borderColor: '#ff5a3c' },
-  cardTitle: { color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 10 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  exerciseThumb: { width: 40, height: 40, borderRadius: 10 },
+  exerciseThumbPlaceholder: {
+    backgroundColor: '#0f1115',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardTitle: { color: '#fff', fontSize: 16, fontWeight: '600' },
   setBlock: { marginBottom: 10 },
   setRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   setLabel: { color: '#9aa0ac', fontSize: 14, width: 60 },

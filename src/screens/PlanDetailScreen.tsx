@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
@@ -27,11 +27,20 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
         contentContainerStyle={styles.list}
         ListHeaderComponent={<Text style={styles.title}>{plan.name}</Text>}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{item.name}</Text>
-            <Text style={styles.cardSubtitle}>
-              {item.sets} Sätze × {item.reps} Wiederholungen
-            </Text>
+          <View style={[styles.card, styles.cardRow]}>
+            {item.photoUri ? (
+              <Image source={{ uri: item.photoUri }} style={styles.thumb} />
+            ) : (
+              <View style={[styles.thumb, styles.thumbPlaceholder]}>
+                <Text style={{ fontSize: 22 }}>🏋️</Text>
+              </View>
+            )}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.cardTitle}>{item.name}</Text>
+              <Text style={styles.cardSubtitle}>
+                {item.sets} Sätze × {item.reps} Wiederholungen
+              </Text>
+            </View>
           </View>
         )}
       />
@@ -50,6 +59,9 @@ const styles = StyleSheet.create({
   list: { padding: 16, paddingBottom: 96 },
   title: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 16 },
   card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 10 },
+  cardRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  thumb: { width: 48, height: 48, borderRadius: 12 },
+  thumbPlaceholder: { backgroundColor: '#0f1115', alignItems: 'center', justifyContent: 'center' },
   cardTitle: { color: '#fff', fontSize: 16, fontWeight: '600' },
   cardSubtitle: { color: '#9aa0ac', fontSize: 14, marginTop: 4 },
   emptyText: { color: '#9aa0ac', textAlign: 'center', marginTop: 40 },
