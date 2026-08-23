@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
+import { APP_VERSION } from '../constants/version';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Plans'>;
 
@@ -11,6 +12,7 @@ export default function PlansScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.version}>{APP_VERSION}</Text>
       <FlatList
         data={plans}
         keyExtractor={(item) => item.id}
@@ -41,6 +43,7 @@ export default function PlansScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f1115' },
+  version: { color: '#6b7280', fontSize: 12, textAlign: 'center', paddingTop: 8 },
   list: { padding: 16, paddingBottom: 96 },
   card: {
     backgroundColor: '#1b1e26',
