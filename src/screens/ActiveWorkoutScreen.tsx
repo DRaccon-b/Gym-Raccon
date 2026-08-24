@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -17,6 +16,7 @@ import { Exercise, LoggedExercise, LoggedSet, WorkoutSession } from '../types';
 import { adjustWeightForEnergy, findLastLoggedExercise } from '../utils/workoutHistory';
 import RestTimerModal from '../components/RestTimerModal';
 import NextExercisePicker from '../components/NextExercisePicker';
+import NumberStepperInput from '../components/NumberStepperInput';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ActiveWorkout'>;
 
@@ -91,14 +91,13 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
   const isWorkoutComplete = remainingExercises.length === 0;
   const prevSets = previousByExercise.get(currentExerciseId) ?? [];
 
-  function updateSet(setIndex: number, field: keyof LoggedSet, value: string) {
+  function updateSet(setIndex: number, field: keyof LoggedSet, value: number) {
     setLogByExercise((prev) => {
       const next = new Map(prev);
       const entry = next.get(currentExerciseId);
       if (!entry) return prev;
-      const numeric = parseFloat(value.replace(',', '.'));
       const sets = [...entry.sets];
-      sets[setIndex] = { ...sets[setIndex], [field]: Number.isFinite(numeric) ? numeric : 0 };
+      sets[setIndex] = { ...sets[setIndex], [field]: value };
       next.set(currentExerciseId, { ...entry, sets });
       return next;
     });
@@ -166,30 +165,31 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
             const prev = prevSets[setIndex];
             return (
               <View key={setIndex} style={styles.setBlock}>
-                <View style={styles.setRow}>
+                <View style={styles.setHeaderRow}>
                   <Text style={styles.setLabel}>Satz {setIndex + 1}</Text>
-                  <View style={styles.setInputs}>
-                    <TextInput
-                      style={styles.setInput}
-                      keyboardType="numeric"
-                      value={String(set.reps)}
-                      onChangeText={(v) => updateSet(setIndex, 'reps', v)}
-                    />
-                    <Text style={styles.setUnit}>Wdh.</Text>
-                    <TextInput
-                      style={styles.setInput}
-                      keyboardType="numeric"
-                      value={String(set.weightKg)}
-                      onChangeText={(v) => updateSet(setIndex, 'weightKg', v)}
-                    />
-                    <Text style={styles.setUnit}>kg</Text>
-                  </View>
+                  <Text style={styles.prevText}>
+                    {prev
+                      ? `Letztes Mal: ${prev.weightKg} kg × ${prev.reps} Wdh.`
+                      : 'Letztes Mal: keine Daten'}
+                  </Text>
                 </View>
-                <Text style={styles.prevText}>
-                  {prev
-                    ? `Letztes Mal: ${prev.weightKg} kg × ${prev.reps} Wdh.`
-                    : 'Letztes Mal: keine Daten'}
-                </Text>
+                <View style={styles.setInputs}>
+                  <NumberStepperInput
+                    value={set.reps}
+                    onChange={(v) => updateSet(setIndex, 'reps', v)}
+                    step={1}
+                    min={0}
+                    suffix="Wdh."
+                  />
+                  <NumberStepperInput
+                    value={set.weightKg}
+                    onChange={(v) => updateSet(setIndex, 'weightKg', v)}
+                    step={2.5}
+                    min={0}
+                    suffix="kg"
+                    decimals={2}
+                  />
+                </View>
               </View>
             );
           })}
@@ -237,21 +237,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  setBlock: { marginBottom: 12 },
-  setRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  setLabel: { color: '#9aa0ac', fontSize: 14, width: 60 },
-  setInputs: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  setInput: {
-    backgroundColor: '#0f1115',
-    color: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    width: 56,
-    textAlign: 'center',
+  setBlock: {
+    marginBottom: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#20242f',
   },
-  setUnit: { color: '#6b7280', fontSize: 12 },
-  prevText: { color: '#6b7280', fontSize: 12, marginTop: 4, marginLeft: 60 },
+  setHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  setLabel: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  setInputs: { flexDirection: 'row', gap: 12 },
+  prevText: { color: '#6b7280', fontSize: 12 },
   restButton: {
     marginTop: 8,
     backgroundColor: '#2a2f3a',
