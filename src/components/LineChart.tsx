@@ -1,22 +1,23 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Svg, { Polyline, Circle, Line, Text as SvgText } from 'react-native-svg';
+import Svg, { Polyline, Circle, Line } from 'react-native-svg';
 
-type Props = {
+export type ChartSeries = {
   values: number[];
-  width: number;
-  height?: number;
-  color?: string;
+  color: string;
 };
 
-export default function LineChart({ values, width, height = 200, color = '#ff5a3c' }: Props) {
-  const paddingX = 16;
-  const paddingY = 24;
+type Props = {
+  series: ChartSeries[];
+  width: number;
+  height?: number;
+};
+
+function toPoints(values: number[], width: number, height: number, paddingX: number, paddingY: number) {
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = max - min || 1;
-
-  const points = values.map((v, i) => {
+  return values.map((v, i) => {
     const x =
       values.length === 1
         ? width / 2
@@ -24,8 +25,11 @@ export default function LineChart({ values, width, height = 200, color = '#ff5a3
     const y = height - paddingY - ((v - min) / range) * (height - paddingY * 2);
     return { x, y };
   });
+}
 
-  const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(' ');
+export default function LineChart({ series, width, height = 200 }: Props) {
+  const paddingX = 16;
+  const paddingY = 16;
 
   return (
     <View style={styles.container}>
@@ -38,18 +42,21 @@ export default function LineChart({ values, width, height = 200, color = '#ff5a3
           stroke="#2a2f3a"
           strokeWidth={1}
         />
-        {values.length > 1 && (
-          <Polyline points={polylinePoints} fill="none" stroke={color} strokeWidth={2.5} />
-        )}
-        {points.map((p, i) => (
-          <Circle key={i} cx={p.x} cy={p.y} r={4} fill={color} />
-        ))}
-        <SvgText x={paddingX} y={14} fill="#9aa0ac" fontSize={11}>
-          {max}
-        </SvgText>
-        <SvgText x={paddingX} y={height - 6} fill="#9aa0ac" fontSize={11}>
-          {min}
-        </SvgText>
+        {series.map((s, si) => {
+          if (s.values.length === 0) return null;
+          const points = toPoints(s.values, width, height, paddingX, paddingY);
+          const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(' ');
+          return (
+            <React.Fragment key={si}>
+              {points.length > 1 && (
+                <Polyline points={polylinePoints} fill="none" stroke={s.color} strokeWidth={2.5} />
+              )}
+              {points.map((p, i) => (
+                <Circle key={i} cx={p.x} cy={p.y} r={4} fill={s.color} />
+              ))}
+            </React.Fragment>
+          );
+        })}
       </Svg>
     </View>
   );

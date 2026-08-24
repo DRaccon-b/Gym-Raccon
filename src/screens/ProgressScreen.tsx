@@ -83,14 +83,32 @@ export default function ProgressScreen() {
               </View>
             </View>
 
-            <Text style={styles.chartTitle}>Höchstes Gewicht pro Workout</Text>
-            <LineChart values={progress.map((p) => p.maxWeight)} width={width - 32} />
+            <Text style={styles.chartTitle}>Gewicht &amp; Wiederholungen im Top-Satz</Text>
+            <LineChart
+              series={[
+                { values: progress.map((p) => p.maxWeight), color: '#ff5a3c' },
+                { values: progress.map((p) => p.topSetReps), color: '#22c55e' },
+              ]}
+              width={width - 32}
+            />
+            <View style={styles.legendRow}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#ff5a3c' }]} />
+                <Text style={styles.legendText}>Gewicht ({latest.maxWeight} kg)</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#22c55e' }]} />
+                <Text style={styles.legendText}>Wiederholungen ({latest.topSetReps})</Text>
+              </View>
+            </View>
 
             <View style={styles.historyList}>
               {[...progress].reverse().map((p, i) => (
                 <View key={i} style={styles.historyRow}>
                   <Text style={styles.historyDate}>{formatDate(p.date)}</Text>
-                  <Text style={styles.historyValue}>{p.maxWeight} kg</Text>
+                  <Text style={styles.historyValue}>
+                    {p.maxWeight} kg × {p.topSetReps} Wdh.
+                  </Text>
                 </View>
               ))}
             </View>
@@ -128,6 +146,10 @@ const styles = StyleSheet.create({
   statUp: { color: '#22c55e' },
   statDown: { color: '#ef4444' },
   chartTitle: { color: '#fff', fontSize: 15, fontWeight: '600', marginBottom: 8 },
+  legendRow: { flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 4 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendText: { color: '#9aa0ac', fontSize: 12, fontWeight: '600' },
   historyList: { marginTop: 24 },
   historyRow: {
     flexDirection: 'row',

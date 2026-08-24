@@ -14,6 +14,7 @@ export function adjustWeightForEnergy(weightKg: number, energy: EnergyLevel): nu
 export type ProgressPoint = {
   date: string;
   maxWeight: number;
+  topSetReps: number;
   totalVolume: number;
 };
 
@@ -32,8 +33,9 @@ export function getExerciseProgress(
     const match = session.exercises.find((ex) => ex.name === exerciseName);
     if (!match || match.sets.length === 0) return;
     const maxWeight = Math.max(...match.sets.map((s) => s.weightKg));
+    const topSet = match.sets.find((s) => s.weightKg === maxWeight) ?? match.sets[0];
     const totalVolume = match.sets.reduce((sum, s) => sum + s.weightKg * s.reps, 0);
-    points.push({ date: session.date, maxWeight, totalVolume });
+    points.push({ date: session.date, maxWeight, topSetReps: topSet.reps, totalVolume });
   });
   return points.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
