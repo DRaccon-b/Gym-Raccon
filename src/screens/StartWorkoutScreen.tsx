@@ -4,6 +4,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
 import { EnergyLevel } from '../utils/workoutHistory';
+import GradientButton from '../components/GradientButton';
+import { colors, radius, spacing } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'StartWorkout'>;
 
@@ -83,60 +85,50 @@ export default function StartWorkoutScreen({ route, navigation }: Props) {
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-        <Text style={styles.startButtonText}>Los geht's</Text>
-      </TouchableOpacity>
+      <GradientButton label="Los geht's" onPress={handleStart} style={{ marginTop: spacing.lg }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1115' },
-  content: { padding: 16, paddingBottom: 48 },
-  sectionTitle: { color: '#fff', fontSize: 18, fontWeight: '700', marginTop: 16, marginBottom: 12 },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.md, paddingBottom: 48 },
+  sectionTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 16, marginBottom: 12 },
   energyCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1b1e26',
-    borderRadius: 14,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
     padding: 14,
     marginBottom: 10,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: colors.border,
   },
-  energyCardSelected: { borderColor: '#ff5a3c' },
+  energyCardSelected: { borderColor: colors.accent, backgroundColor: colors.accentGlow },
   energyEmoji: { fontSize: 26, marginRight: 14 },
-  energyLabel: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  energyHint: { color: '#9aa0ac', fontSize: 13, marginTop: 2 },
-  checkmark: { color: '#ff5a3c', fontSize: 18, fontWeight: '700' },
+  energyLabel: { color: colors.textPrimary, fontSize: 16, fontWeight: '600' },
+  energyHint: { color: colors.textSecondary, fontSize: 13, marginTop: 2 },
+  checkmark: { color: colors.accent, fontSize: 18, fontWeight: '700' },
   exerciseChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#1b1e26',
-    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 8,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: colors.border,
   },
-  exerciseThumb: { width: 36, height: 36, borderRadius: 9 },
+  exerciseThumb: { width: 36, height: 36, borderRadius: radius.sm },
   exerciseThumbPlaceholder: {
-    backgroundColor: '#0f1115',
+    backgroundColor: colors.surfaceSunken,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  exerciseChipSelected: { borderColor: '#ff5a3c', backgroundColor: '#2a1e1a' },
-  exerciseChipText: { color: '#fff', fontSize: 15 },
+  exerciseChipSelected: { borderColor: colors.accent, backgroundColor: colors.accentGlow },
+  exerciseChipText: { color: colors.textPrimary, fontSize: 15 },
   exerciseChipTextSelected: { fontWeight: '700' },
-  startButton: {
-    marginTop: 28,
-    backgroundColor: '#ff5a3c',
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  startButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  emptyText: { color: '#9aa0ac', textAlign: 'center', marginTop: 40 },
+  emptyText: { color: colors.textSecondary, textAlign: 'center', marginTop: 40 },
 });

@@ -3,6 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
+import { colors, radius, spacing, typography } from '../theme';
+import Card from '../components/Card';
+import GradientButton from '../components/GradientButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PlanDetail'>;
 
@@ -37,7 +40,7 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
           </View>
         }
         renderItem={({ item }) => (
-          <View style={[styles.card, styles.cardRow]}>
+          <Card style={styles.cardRow}>
             {item.photoUri ? (
               <Image source={{ uri: item.photoUri }} style={styles.thumb} />
             ) : (
@@ -51,52 +54,51 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
                 {item.sets} Sätze × {item.reps} Wiederholungen
               </Text>
             </View>
-          </View>
+          </Card>
         )}
       />
-      <TouchableOpacity
-        style={styles.startButton}
+      <GradientButton
+        label="Workout starten"
         onPress={() => navigation.navigate('StartWorkout', { planId: plan.id })}
-      >
-        <Text style={styles.startButtonText}>Workout starten</Text>
-      </TouchableOpacity>
+        style={styles.startButton}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1115' },
-  list: { padding: 16, paddingBottom: 96 },
+  container: { flex: 1, backgroundColor: colors.background },
+  list: { padding: spacing.md, paddingBottom: 110 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
-  title: { color: '#fff', fontSize: 24, fontWeight: '700' },
+  title: { ...typography.screenTitle },
   editButton: {
-    backgroundColor: '#1b1e26',
-    borderRadius: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.sm,
     paddingVertical: 8,
     paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  editButtonText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
-  card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 10 },
-  cardRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  thumb: { width: 48, height: 48, borderRadius: 12 },
-  thumbPlaceholder: { backgroundColor: '#0f1115', alignItems: 'center', justifyContent: 'center' },
-  cardTitle: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  cardSubtitle: { color: '#9aa0ac', fontSize: 14, marginTop: 4 },
-  emptyText: { color: '#9aa0ac', textAlign: 'center', marginTop: 40 },
+  editButtonText: { color: colors.accent, fontSize: 13, fontWeight: '700' },
+  cardRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
+  thumb: { width: 48, height: 48, borderRadius: radius.md },
+  thumbPlaceholder: {
+    backgroundColor: colors.surfaceSunken,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardTitle: { ...typography.title, fontSize: 16 },
+  cardSubtitle: { ...typography.body, marginTop: 4 },
+  emptyText: { color: colors.textSecondary, textAlign: 'center', marginTop: 40 },
   startButton: {
     position: 'absolute',
     bottom: 24,
-    left: 16,
-    right: 16,
-    backgroundColor: '#ff5a3c',
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
+    left: spacing.md,
+    right: spacing.md,
   },
-  startButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

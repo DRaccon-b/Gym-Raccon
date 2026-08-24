@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Exercise } from '../types';
+import { colors, radius, shadow } from '../theme';
 
 type Props = {
   visible: boolean;
@@ -41,25 +42,34 @@ export default function NextExercisePicker({ visible, exercises, onSelect, onClo
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   sheet: {
-    backgroundColor: '#1b1e26',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radius.xl,
+    borderTopRightRadius: radius.xl,
     padding: 20,
     paddingBottom: 32,
+    borderTopWidth: 1,
+    borderColor: colors.border,
+    ...shadow.card,
   },
-  title: { color: '#fff', fontSize: 18, fontWeight: '700', marginBottom: 16 },
+  title: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 16 },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#0f1115',
-    borderRadius: 12,
+    backgroundColor: colors.surfaceSunken,
+    borderRadius: radius.md,
     padding: 12,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  thumb: { width: 36, height: 36, borderRadius: 9 },
-  thumbPlaceholder: { backgroundColor: '#1b1e26', alignItems: 'center', justifyContent: 'center' },
-  itemText: { color: '#fff', fontSize: 15 },
+  thumb: { width: 36, height: 36, borderRadius: radius.sm },
+  thumbPlaceholder: {
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  itemText: { color: colors.textPrimary, fontSize: 15 },
   cancelButton: { marginTop: 12, alignItems: 'center', paddingVertical: 12 },
-  cancelText: { color: '#9aa0ac', fontSize: 15 },
+  cancelText: { color: colors.textSecondary, fontSize: 15 },
 });

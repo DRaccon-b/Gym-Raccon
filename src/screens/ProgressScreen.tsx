@@ -3,6 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensio
 import { useAppData } from '../context/AppDataContext';
 import { getExerciseProgress, getLoggedExerciseNames } from '../utils/workoutHistory';
 import LineChart from '../components/LineChart';
+import Card from '../components/Card';
+import { colors, radius, spacing, typography } from '../theme';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -58,7 +60,7 @@ export default function ProgressScreen() {
           <Text style={styles.emptyText}>Keine Daten für diese Übung.</Text>
         ) : (
           <>
-            <View style={styles.statsRow}>
+            <Card style={styles.statsRow}>
               <View>
                 <Text style={styles.statLabel}>Aktuell</Text>
                 <Text style={styles.statValue}>{latest.maxWeight} kg</Text>
@@ -81,26 +83,28 @@ export default function ProgressScreen() {
                 <Text style={styles.statLabel}>Workouts</Text>
                 <Text style={styles.statValue}>{progress.length}</Text>
               </View>
-            </View>
+            </Card>
 
-            <Text style={styles.chartTitle}>Gewicht &amp; Wiederholungen im Top-Satz</Text>
-            <LineChart
-              series={[
-                { values: progress.map((p) => p.maxWeight), color: '#ff5a3c' },
-                { values: progress.map((p) => p.topSetReps), color: '#22c55e' },
-              ]}
-              width={width - 32}
-            />
-            <View style={styles.legendRow}>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#ff5a3c' }]} />
-                <Text style={styles.legendText}>Gewicht ({latest.maxWeight} kg)</Text>
+            <Card>
+              <Text style={styles.chartTitle}>Gewicht &amp; Wiederholungen im Top-Satz</Text>
+              <LineChart
+                series={[
+                  { values: progress.map((p) => p.maxWeight), color: colors.accent },
+                  { values: progress.map((p) => p.topSetReps), color: colors.success },
+                ]}
+                width={width - 64}
+              />
+              <View style={styles.legendRow}>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: colors.accent }]} />
+                  <Text style={styles.legendText}>Gewicht ({latest.maxWeight} kg)</Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: colors.success }]} />
+                  <Text style={styles.legendText}>Wiederholungen ({latest.topSetReps})</Text>
+                </View>
               </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#22c55e' }]} />
-                <Text style={styles.legendText}>Wiederholungen ({latest.topSetReps})</Text>
-              </View>
-            </View>
+            </Card>
 
             <View style={styles.historyList}>
               {[...progress].reverse().map((p, i) => (
@@ -120,47 +124,45 @@ export default function ProgressScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1115' },
+  container: { flex: 1, backgroundColor: colors.background },
   chipRow: { flexGrow: 0, paddingVertical: 12, paddingLeft: 16 },
   chip: {
-    backgroundColor: '#1b1e26',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: radius.pill,
     paddingVertical: 8,
     paddingHorizontal: 16,
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  chipSelected: { backgroundColor: '#ff5a3c' },
-  chipText: { color: '#9aa0ac', fontSize: 14, fontWeight: '600' },
-  chipTextSelected: { color: '#fff' },
-  content: { padding: 16, paddingTop: 4 },
+  chipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
+  chipText: { color: colors.textSecondary, fontSize: 14, fontWeight: '600' },
+  chipTextSelected: { color: colors.textPrimary },
+  content: { padding: spacing.md, paddingTop: 4, gap: spacing.md },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#1b1e26',
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 20,
   },
-  statLabel: { color: '#9aa0ac', fontSize: 12 },
-  statValue: { color: '#fff', fontSize: 18, fontWeight: '700', marginTop: 4 },
-  statUp: { color: '#22c55e' },
-  statDown: { color: '#ef4444' },
-  chartTitle: { color: '#fff', fontSize: 15, fontWeight: '600', marginBottom: 8 },
-  legendRow: { flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 4 },
+  statLabel: { ...typography.label },
+  statValue: { color: colors.textPrimary, fontSize: 18, fontWeight: '800', marginTop: 4 },
+  statUp: { color: colors.success },
+  statDown: { color: colors.danger },
+  chartTitle: { ...typography.subtitle, marginBottom: 8 },
+  legendRow: { flexDirection: 'row', justifyContent: 'center', gap: 20, marginTop: 8 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText: { color: '#9aa0ac', fontSize: 12, fontWeight: '600' },
-  historyList: { marginTop: 24 },
+  legendText: { color: colors.textSecondary, fontSize: 12, fontWeight: '600' },
+  historyList: { marginTop: 8 },
   historyRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#1b1e26',
+    borderBottomColor: colors.surface,
   },
-  historyDate: { color: '#9aa0ac', fontSize: 14 },
-  historyValue: { color: '#fff', fontSize: 14, fontWeight: '600' },
+  historyDate: { color: colors.textSecondary, fontSize: 14 },
+  historyValue: { color: colors.textPrimary, fontSize: 14, fontWeight: '600' },
   empty: { marginTop: 80, alignItems: 'center', paddingHorizontal: 32 },
-  emptyText: { color: '#fff', fontSize: 16, fontWeight: '600', textAlign: 'center' },
-  emptySubtext: { color: '#9aa0ac', fontSize: 14, marginTop: 8, textAlign: 'center' },
+  emptyText: { ...typography.title, textAlign: 'center' },
+  emptySubtext: { ...typography.body, marginTop: 8, textAlign: 'center' },
 });

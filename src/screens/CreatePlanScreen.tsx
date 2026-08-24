@@ -13,6 +13,8 @@ import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
 import { Exercise, WorkoutPlan } from '../types';
 import ExercisePhotoPicker from '../components/ExercisePhotoPicker';
+import GradientButton from '../components/GradientButton';
+import { colors, radius, spacing } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePlan'>;
 
@@ -175,72 +177,75 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSavePlan}>
-        <Text style={styles.saveButtonText}>
-          {existingPlan ? 'Änderungen speichern' : 'Plan speichern'}
-        </Text>
-      </TouchableOpacity>
+      <GradientButton
+        label={existingPlan ? 'Änderungen speichern' : 'Plan speichern'}
+        onPress={handleSavePlan}
+        style={{ marginTop: spacing.xl }}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1115' },
-  content: { padding: 16, paddingBottom: 48 },
-  label: { color: '#9aa0ac', fontSize: 13, marginBottom: 6, marginTop: 12 },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.md, paddingBottom: 48 },
+  label: { color: colors.textSecondary, fontSize: 13, marginBottom: 6, marginTop: 12 },
   input: {
-    backgroundColor: '#1b1e26',
-    color: '#fff',
-    borderRadius: 10,
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
+    borderRadius: radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  sectionTitle: { color: '#fff', fontSize: 18, fontWeight: '700', marginTop: 24, marginBottom: 8 },
+  sectionTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 24, marginBottom: 8 },
   exerciseRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1b1e26',
-    borderRadius: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.sm,
     padding: 12,
     marginBottom: 8,
     borderWidth: 2,
     borderColor: 'transparent',
   },
-  exerciseRowEditing: { borderColor: '#ff5a3c' },
-  exerciseText: { color: '#fff', fontSize: 15 },
-  editHint: { color: '#6b7280', fontSize: 11, marginTop: 2 },
-  removeText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
-  addExerciseBox: { marginTop: 12, backgroundColor: '#151821', borderRadius: 12, padding: 12 },
+  exerciseRowEditing: { borderColor: colors.accent },
+  exerciseText: { color: colors.textPrimary, fontSize: 15 },
+  editHint: { color: colors.textMuted, fontSize: 11, marginTop: 2 },
+  removeText: { color: colors.accent, fontSize: 13, fontWeight: '600' },
+  addExerciseBox: {
+    marginTop: 12,
+    backgroundColor: colors.surfaceSunken,
+    borderRadius: radius.md,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   editingBanner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#2a1e1a',
+    backgroundColor: colors.accentGlow,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 4,
   },
-  editingBannerText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
-  editingBannerCancel: { color: '#9aa0ac', fontSize: 13 },
+  editingBannerText: { color: colors.accent, fontSize: 13, fontWeight: '600' },
+  editingBannerCancel: { color: colors.textSecondary, fontSize: 13 },
   row: { flexDirection: 'row', gap: 12, alignItems: 'center', marginTop: 12 },
   rowItem: { flex: 1 },
   addButton: {
     marginTop: 12,
-    backgroundColor: '#2a2f3a',
-    borderRadius: 10,
+    backgroundColor: colors.surfaceRaised,
+    borderRadius: radius.sm,
     paddingVertical: 12,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  addButtonText: { color: '#fff', fontWeight: '600' },
-  saveButton: {
-    marginTop: 32,
-    backgroundColor: '#ff5a3c',
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  saveButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  addButtonText: { color: colors.textPrimary, fontWeight: '600' },
 });

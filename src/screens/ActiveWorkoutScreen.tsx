@@ -17,6 +17,9 @@ import { adjustWeightForEnergy, findLastLoggedExercise } from '../utils/workoutH
 import RestTimerModal from '../components/RestTimerModal';
 import NextExercisePicker from '../components/NextExercisePicker';
 import NumberStepperInput from '../components/NumberStepperInput';
+import GradientButton from '../components/GradientButton';
+import Card from '../components/Card';
+import { colors, radius, spacing } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ActiveWorkout'>;
 
@@ -149,7 +152,7 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
           Übung {visitOrder.length} von {allExercises.length}
         </Text>
 
-        <View style={styles.card}>
+        <Card>
           <View style={styles.cardHeader}>
             {currentExercise.photoUri ? (
               <Image source={{ uri: currentExercise.photoUri }} style={styles.exerciseThumb} />
@@ -197,17 +200,15 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
           <TouchableOpacity style={styles.restButton} onPress={() => setShowTimer(true)}>
             <Text style={styles.restButtonText}>⏱ Satzpause starten</Text>
           </TouchableOpacity>
-        </View>
+        </Card>
       </ScrollView>
 
-      <TouchableOpacity
-        style={[styles.nextButton, isWorkoutComplete && styles.nextButtonFinal]}
+      <GradientButton
+        label={isWorkoutComplete ? 'Workout beenden' : 'Nächste Übung →'}
+        variant={isWorkoutComplete ? 'success' : 'accent'}
         onPress={handleNext}
-      >
-        <Text style={styles.nextButtonText}>
-          {isWorkoutComplete ? 'Workout beenden' : 'Nächste Übung →'}
-        </Text>
-      </TouchableOpacity>
+        style={styles.nextButton}
+      />
 
       <RestTimerModal
         visible={showTimer}
@@ -225,23 +226,22 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1115' },
-  list: { padding: 16, paddingBottom: 96 },
-  progress: { color: '#9aa0ac', fontSize: 13, marginBottom: 12, textAlign: 'center' },
-  card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 12 },
+  container: { flex: 1, backgroundColor: colors.background },
+  list: { padding: spacing.md, paddingBottom: 110 },
+  progress: { color: colors.textSecondary, fontSize: 13, marginBottom: 12, textAlign: 'center', fontWeight: '600' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
-  exerciseThumb: { width: 48, height: 48, borderRadius: 12 },
+  exerciseThumb: { width: 48, height: 48, borderRadius: radius.md },
   exerciseThumbPlaceholder: {
-    backgroundColor: '#0f1115',
+    backgroundColor: colors.surfaceSunken,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
+  cardTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '800' },
   setBlock: {
     marginBottom: 14,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#20242f',
+    borderBottomColor: colors.border,
   },
   setHeaderRow: {
     flexDirection: 'row',
@@ -249,28 +249,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
-  setLabel: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  setLabel: { color: colors.textPrimary, fontSize: 14, fontWeight: '700' },
   setInputs: { flexDirection: 'row', gap: 12 },
-  prevText: { color: '#6b7280', fontSize: 12 },
+  prevText: { color: colors.textMuted, fontSize: 12 },
   restButton: {
     marginTop: 8,
-    backgroundColor: '#2a2f3a',
-    borderRadius: 12,
+    backgroundColor: colors.surfaceRaised,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  restButtonText: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  emptyText: { color: '#9aa0ac', textAlign: 'center', marginTop: 40 },
+  restButtonText: { color: colors.textPrimary, fontSize: 15, fontWeight: '600' },
+  emptyText: { color: colors.textSecondary, textAlign: 'center', marginTop: 40 },
   nextButton: {
     position: 'absolute',
     bottom: 24,
-    left: 16,
-    right: 16,
-    backgroundColor: '#ff5a3c',
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: 'center',
+    left: spacing.md,
+    right: spacing.md,
   },
-  nextButtonFinal: { backgroundColor: '#22c55e' },
-  nextButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

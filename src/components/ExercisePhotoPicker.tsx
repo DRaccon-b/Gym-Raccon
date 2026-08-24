@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { colors } from '../theme';
 
 type Props = {
   photoUri?: string;
@@ -70,7 +71,12 @@ export default function ExercisePhotoPicker({ photoUri, onChange, size = 56 }: P
 }
 
 const styles = StyleSheet.create({
-  container: { overflow: 'hidden', backgroundColor: '#0f1115' },
+  container: {
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceSunken,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   image: { width: '100%', height: '100%' },
   placeholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

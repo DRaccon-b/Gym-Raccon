@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Vibration } from 'react-native';
+import { colors, radius, shadow } from '../theme';
 
 type Props = {
   visible: boolean;
@@ -64,23 +65,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    backgroundColor: '#1b1e26',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xl,
     paddingVertical: 32,
     paddingHorizontal: 40,
     alignItems: 'center',
     width: '80%',
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadow.card,
   },
-  label: { color: '#9aa0ac', fontSize: 16, marginBottom: 12 },
-  timer: { color: '#fff', fontSize: 56, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  timerDone: { color: '#22c55e' },
+  label: { color: colors.textSecondary, fontSize: 16, marginBottom: 12, fontWeight: '600' },
+  timer: {
+    color: colors.textPrimary,
+    fontSize: 56,
+    fontWeight: '800',
+    fontVariant: ['tabular-nums'],
+  },
+  timerDone: { color: colors.success },
   button: {
     marginTop: 28,
-    backgroundColor: '#2a2f3a',
-    borderRadius: 12,
+    backgroundColor: colors.surfaceRaised,
+    borderRadius: radius.md,
     paddingVertical: 14,
     paddingHorizontal: 28,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  buttonDone: { backgroundColor: '#22c55e' },
-  buttonText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  buttonDone: { backgroundColor: colors.success, borderColor: colors.success },
+  buttonText: { color: colors.textPrimary, fontSize: 15, fontWeight: '700' },
 });

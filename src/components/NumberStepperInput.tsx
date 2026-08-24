@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { colors, radius } from '../theme';
 
 type Props = {
   value: number;
@@ -67,30 +68,30 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#12151c',
-    borderRadius: 14,
+    backgroundColor: colors.surfaceSunken,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#242833',
+    borderColor: colors.border,
     paddingHorizontal: 4,
     paddingVertical: 4,
   },
   stepButton: {
     width: 34,
     height: 34,
-    borderRadius: 10,
-    backgroundColor: '#1f2430',
+    borderRadius: radius.sm,
+    backgroundColor: colors.surfaceRaised,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepButtonText: { color: '#ff5a3c', fontSize: 20, fontWeight: '700', lineHeight: 22 },
+  stepButtonText: { color: colors.accent, fontSize: 20, fontWeight: '700', lineHeight: 22 },
   valueBox: { minWidth: 64, alignItems: 'center', justifyContent: 'center' },
   valueInput: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: 18,
     fontWeight: '700',
     textAlign: 'center',
     minWidth: 40,
     paddingVertical: 0,
   },
-  suffix: { color: '#6b7280', fontSize: 11, fontWeight: '600', marginTop: -2 },
+  suffix: { color: colors.textMuted, fontSize: 11, fontWeight: '600', marginTop: -2 },
 });

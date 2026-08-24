@@ -12,20 +12,22 @@ import ProgressScreen from '../screens/ProgressScreen';
 import StreakScreen from '../screens/StreakScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
+import { colors } from '../theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
-  headerStyle: { backgroundColor: '#0f1115' },
-  headerTintColor: '#fff',
+  headerStyle: { backgroundColor: colors.background },
+  headerTintColor: colors.textPrimary,
   headerTitleStyle: { fontWeight: '700' as const },
+  headerShadowVisible: false,
 };
 
 function PlansStack() {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="Plans" component={PlansScreen} options={{ title: 'Trainingspläne' }} />
+      <Stack.Screen name="Plans" component={PlansScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="CreatePlan"
         component={CreatePlanScreen}
@@ -53,9 +55,16 @@ export default function RootNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: '#0f1115', borderTopColor: '#1b1e26' },
-        tabBarActiveTintColor: '#ff5a3c',
-        tabBarInactiveTintColor: '#6b7280',
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+          height: 64,
+          paddingTop: 8,
+          paddingBottom: 10,
+        },
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' as const },
       }}
     >
       <Tab.Screen

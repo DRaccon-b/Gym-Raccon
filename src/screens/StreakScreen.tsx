@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useAppData } from '../context/AppDataContext';
 import { dateKey, getCurrentStreak, getTrainedDateKeys } from '../utils/workoutHistory';
+import Card from '../components/Card';
+import { colors, radius, spacing, typography } from '../theme';
 
 const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const MONTH_LABELS = [
@@ -75,14 +77,14 @@ export default function StreakScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.statsRow}>
-        <View style={styles.statCard}>
+        <Card style={styles.statCard} highlighted>
           <Text style={styles.statValue}>🔥 {currentStreak}</Text>
           <Text style={styles.statLabel}>Tage in Folge</Text>
-        </View>
-        <View style={styles.statCard}>
+        </Card>
+        <Card style={styles.statCard}>
           <Text style={styles.statValue}>{trainedThisMonth}</Text>
           <Text style={styles.statLabel}>Diesen Monat</Text>
-        </View>
+        </Card>
       </View>
 
       <View style={styles.monthHeader}>
@@ -136,17 +138,11 @@ export default function StreakScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1115', padding: 16 },
-  statsRow: { flexDirection: 'row', gap: 12, marginBottom: 20 },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#1b1e26',
-    borderRadius: 14,
-    padding: 16,
-    alignItems: 'center',
-  },
-  statValue: { color: '#fff', fontSize: 22, fontWeight: '700' },
-  statLabel: { color: '#9aa0ac', fontSize: 12, marginTop: 4 },
+  container: { flex: 1, backgroundColor: colors.background, padding: spacing.md },
+  statsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
+  statCard: { flex: 1, alignItems: 'center' },
+  statValue: { color: colors.textPrimary, fontSize: 22, fontWeight: '800' },
+  statLabel: { ...typography.label, marginTop: 4 },
   monthHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -157,23 +153,27 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1b1e26',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  monthNavText: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  monthTitle: { color: '#fff', fontSize: 17, fontWeight: '700' },
+  monthNavText: { color: colors.textPrimary, fontSize: 20, fontWeight: '700' },
+  monthTitle: { ...typography.title, fontSize: 17 },
   weekdayRow: { flexDirection: 'row', gap: 8, marginBottom: 6 },
-  weekdayLabel: { color: '#6b7280', fontSize: 12, textAlign: 'center' },
+  weekdayLabel: { color: colors.textMuted, fontSize: 12, textAlign: 'center' },
   weekRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
   dayCell: {
-    backgroundColor: '#1b1e26',
-    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  dayCellTrained: { backgroundColor: '#ff5a3c' },
-  dayCellToday: { borderWidth: 2, borderColor: '#fff' },
-  dayNumber: { color: '#6b7280', fontSize: 11, fontWeight: '600' },
-  dayNumberTrained: { color: '#fff' },
+  dayCellTrained: { backgroundColor: colors.accent, borderColor: colors.accent },
+  dayCellToday: { borderWidth: 2, borderColor: colors.textPrimary },
+  dayNumber: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
+  dayNumberTrained: { color: colors.textPrimary },
 });
