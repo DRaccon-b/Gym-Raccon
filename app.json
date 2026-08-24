@@ -19,7 +19,18 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "Gym Raccon",
+      "shortName": "Gym Raccon",
+      "backgroundColor": "#0b0d12",
+      "themeColor": "#ff5a3c",
+      "display": "standalone",
+      "lang": "de"
+    },
+    "experiments": {
+      "baseUrl": "/Gym-Raccon"
     },
     "plugins": [
       [

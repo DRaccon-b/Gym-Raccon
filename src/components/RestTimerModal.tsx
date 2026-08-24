@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Vibration } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Vibration, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { colors, radius, shadow } from '../theme';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+const notificationsSupported = Platform.OS !== 'web';
+
+if (notificationsSupported) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+}
 
 type Props = {
   visible: boolean;
@@ -27,27 +31,30 @@ export default function RestTimerModal({ visible, totalSeconds, onClose }: Props
     if (!visible) return;
     setRemaining(totalSeconds);
 
-    (async () => {
-      try {
-        const { status } = await Notifications.getPermissionsAsync();
-        const granted =
-          status === 'granted' || (await Notifications.requestPermissionsAsync()).status === 'granted';
-        if (!granted) return;
-        notificationIdRef.current = await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Satzpause vorbei! 💪',
-            body: 'Zeit für den nächsten Satz.',
-            sound: true,
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-            seconds: totalSeconds,
-          },
-        });
-      } catch {
-        // Benachrichtigungen sind optional – Timer läuft im Vordergrund trotzdem weiter.
-      }
-    })();
+    if (notificationsSupported) {
+      (async () => {
+        try {
+          const { status } = await Notifications.getPermissionsAsync();
+          const granted =
+            status === 'granted' ||
+            (await Notifications.requestPermissionsAsync()).status === 'granted';
+          if (!granted) return;
+          notificationIdRef.current = await Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Satzpause vorbei! 💪',
+              body: 'Zeit für den nächsten Satz.',
+              sound: true,
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+              seconds: totalSeconds,
+            },
+          });
+        } catch {
+          // Benachrichtigungen sind optional – Timer läuft im Vordergrund trotzdem weiter.
+        }
+      })();
+    }
 
     intervalRef.current = setInterval(() => {
       setRemaining((prev) => {
@@ -66,7 +73,7 @@ export default function RestTimerModal({ visible, totalSeconds, onClose }: Props
   }, [visible, totalSeconds]);
 
   function cancelPendingNotification() {
-    if (notificationIdRef.current) {
+    if (notificationsSupported && notificationIdRef.current) {
       Notifications.cancelScheduledNotificationAsync(notificationIdRef.current).catch(() => {});
       notificationIdRef.current = null;
     }
@@ -84,8 +91,11 @@ export default function RestTimerModal({ visible, totalSeconds, onClose }: Props
           <Text style={[styles.timer, isDone && styles.timerDone]}>
             {minutes}:{String(seconds).padStart(2, '0')}
           </Text>
-          {!isDone && (
+          {!isDone && notificationsSupported && (
             <Text style={styles.hint}>Du bekommst eine Erinnerung, wenn die App im Hintergrund läuft.</Text>
+          )}
+          {!isDone && !notificationsSupported && (
+            <Text style={styles.hint}>Lass die Seite geöffnet, damit der Timer weiterläuft.</Text>
           )}
           <TouchableOpacity
             style={[styles.button, isDone && styles.buttonDone]}
