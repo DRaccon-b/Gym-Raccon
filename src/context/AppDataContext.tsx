@@ -10,6 +10,7 @@ type AppDataContextValue = {
   deletePlan: (planId: string) => Promise<void>;
   addSession: (session: WorkoutSession) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
+  clearAllData: () => Promise<void>;
 };
 
 const AppDataContext = createContext<AppDataContextValue | undefined>(undefined);
@@ -60,9 +61,24 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const clearAllData = useCallback(async () => {
+    setPlans([]);
+    setSessions([]);
+    await Promise.all([savePlans([]), saveSessions([])]);
+  }, []);
+
   return (
     <AppDataContext.Provider
-      value={{ plans, sessions, loading, addPlan, deletePlan, addSession, deleteSession }}
+      value={{
+        plans,
+        sessions,
+        loading,
+        addPlan,
+        deletePlan,
+        addSession,
+        deleteSession,
+        clearAllData,
+      }}
     >
       {children}
     </AppDataContext.Provider>

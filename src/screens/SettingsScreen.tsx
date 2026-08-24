@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useSettings } from '../context/SettingsContext';
+import { useAppData } from '../context/AppDataContext';
 import { APP_VERSION } from '../constants/version';
 
 const STEP = 15;
@@ -17,6 +18,35 @@ function formatSeconds(seconds: number): string {
 
 export default function SettingsScreen() {
   const { restSeconds, setRestSeconds } = useSettings();
+  const { clearAllData } = useAppData();
+
+  function handleClearAll() {
+    Alert.alert(
+      'Alles löschen?',
+      'Das löscht unwiderruflich alle Trainingspläne, deinen kompletten Workout-Verlauf und alle Fortschrittsdaten. Das kann nicht rückgängig gemacht werden.',
+      [
+        { text: 'Abbrechen', style: 'cancel' },
+        {
+          text: 'Endgültig löschen',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Bist du sicher?',
+              'Wirklich ALLE Daten löschen?',
+              [
+                { text: 'Abbrechen', style: 'cancel' },
+                {
+                  text: 'Ja, alles löschen',
+                  style: 'destructive',
+                  onPress: () => clearAllData(),
+                },
+              ]
+            );
+          },
+        },
+      ]
+    );
+  }
 
   function decrease() {
     setRestSeconds(Math.max(MIN_SECONDS, restSeconds - STEP));
@@ -42,6 +72,14 @@ export default function SettingsScreen() {
           <Text style={styles.stepperButtonText}>+</Text>
         </TouchableOpacity>
       </View>
+
+      <Text style={[styles.sectionTitle, { marginTop: 40 }]}>Gefahrenzone</Text>
+      <Text style={styles.sectionSubtitle}>
+        Löscht alle Trainingspläne, den Workout-Verlauf und alle Fortschrittsdaten unwiderruflich.
+      </Text>
+      <TouchableOpacity style={styles.dangerButton} onPress={handleClearAll}>
+        <Text style={styles.dangerButtonText}>Alle Daten löschen</Text>
+      </TouchableOpacity>
 
       <Text style={styles.version}>{APP_VERSION}</Text>
     </View>
@@ -71,5 +109,15 @@ const styles = StyleSheet.create({
   },
   stepperButtonText: { color: '#fff', fontSize: 24, fontWeight: '700' },
   stepperValue: { color: '#fff', fontSize: 28, fontWeight: '700', minWidth: 110, textAlign: 'center' },
+  dangerButton: {
+    marginTop: 4,
+    backgroundColor: '#2a1416',
+    borderWidth: 1,
+    borderColor: '#7f1d1d',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  dangerButtonText: { color: '#ef4444', fontSize: 15, fontWeight: '700' },
   version: { color: '#6b7280', fontSize: 12, textAlign: 'center', marginTop: 32 },
 });
