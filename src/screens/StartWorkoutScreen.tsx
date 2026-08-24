@@ -11,7 +11,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'StartWorkout'>;
 
 const ENERGY_OPTIONS: { value: EnergyLevel; emoji: string; label: string; hint: string }[] = [
   { value: 'good', emoji: '💪', label: 'Fühl mich gut', hint: 'Gewicht wird leicht erhöht' },
-  { value: 'weak', emoji: '😐', label: 'Bin schwach', hint: 'Gewicht bleibt gleich' },
+  { value: 'weak', emoji: '😐', label: 'Normal', hint: 'Gewicht bleibt gleich' },
   { value: 'bad', emoji: '😩', label: 'Abgrundtief scheiße', hint: 'Gewicht wird leicht gesenkt' },
 ];
 
