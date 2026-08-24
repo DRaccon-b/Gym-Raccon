@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
@@ -12,10 +13,11 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Plans'>;
 
 export default function PlansScreen({ navigation }: Props) {
   const { plans, deletePlan } = useAppData();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Text style={styles.headerTitle}>Deine Pläne</Text>
         <Text style={styles.version}>{APP_VERSION}</Text>
       </View>
@@ -67,7 +69,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'baseline',
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
   },
   headerTitle: { ...typography.screenTitle },
   version: { color: colors.textMuted, fontSize: 12 },

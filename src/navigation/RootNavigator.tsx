@@ -13,6 +13,7 @@ import StreakScreen from '../screens/StreakScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
 import { colors } from '../theme';
+import CustomTabBar from './CustomTabBar';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -53,18 +54,9 @@ function PlansStack() {
 export default function RootNavigator() {
   return (
     <Tab.Navigator
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-          height: 64,
-          paddingTop: 8,
-          paddingBottom: 10,
-        },
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' as const },
       }}
     >
       <Tab.Screen
