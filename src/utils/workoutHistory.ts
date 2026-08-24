@@ -67,6 +67,40 @@ export function getCurrentStreak(sessions: WorkoutSession[]): number {
 
 export { dateKey };
 
+export type VolumePeriod = 'session' | 'week' | 'month' | 'all';
+
+function sessionVolume(session: WorkoutSession): number {
+  return session.exercises.reduce(
+    (sum, ex) => sum + ex.sets.reduce((s, set) => s + set.weightKg * set.reps, 0),
+    0
+  );
+}
+
+export function getTotalVolume(sessions: WorkoutSession[], period: VolumePeriod): number {
+  if (sessions.length === 0) return 0;
+  const now = new Date();
+  const sorted = [...sessions].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  if (period === 'session') {
+    return sessionVolume(sorted[0]);
+  }
+
+  let cutoff: Date | undefined;
+  if (period === 'week') {
+    cutoff = new Date(now);
+    cutoff.setDate(cutoff.getDate() - 7);
+  } else if (period === 'month') {
+    cutoff = new Date(now);
+    cutoff.setMonth(cutoff.getMonth() - 1);
+  }
+
+  return sorted
+    .filter((s) => !cutoff || new Date(s.date) >= cutoff)
+    .reduce((sum, s) => sum + sessionVolume(s), 0);
+}
+
 export function findLastLoggedExercise(
   exerciseName: string,
   sessions: WorkoutSession[]

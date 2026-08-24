@@ -1,7 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useAppData } from '../context/AppDataContext';
-import { getExerciseProgress, getLoggedExerciseNames } from '../utils/workoutHistory';
+import {
+  getExerciseProgress,
+  getLoggedExerciseNames,
+  getTotalVolume,
+  VolumePeriod,
+} from '../utils/workoutHistory';
 import LineChart from '../components/LineChart';
 import Card from '../components/Card';
 import { colors, radius, spacing, typography } from '../theme';
@@ -10,11 +15,28 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
 }
 
+function formatVolume(kg: number): string {
+  if (kg >= 1000) return `${(kg / 1000).toFixed(1).replace(/\.0$/, '')} t`;
+  return `${Math.round(kg)} kg`;
+}
+
+const VOLUME_PERIODS: { value: VolumePeriod; label: string }[] = [
+  { value: 'session', label: 'Letztes Workout' },
+  { value: 'week', label: '7 Tage' },
+  { value: 'month', label: '30 Tage' },
+  { value: 'all', label: 'Gesamt' },
+];
+
 export default function ProgressScreen() {
   const { sessions } = useAppData();
   const { width } = useWindowDimensions();
   const exerciseNames = useMemo(() => getLoggedExerciseNames(sessions), [sessions]);
   const [selected, setSelected] = useState<string | undefined>(exerciseNames[0]);
+  const [volumePeriod, setVolumePeriod] = useState<VolumePeriod>('week');
+  const totalVolume = useMemo(
+    () => getTotalVolume(sessions, volumePeriod),
+    [sessions, volumePeriod]
+  );
 
   const activeName = selected && exerciseNames.includes(selected) ? selected : exerciseNames[0];
   const progress = useMemo(
@@ -41,6 +63,34 @@ export default function ProgressScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.volumeSection}>
+        <Card>
+          <Text style={styles.chartTitle}>Bewegtes Gewicht</Text>
+          <Text style={styles.volumeValue}>{formatVolume(totalVolume)}</Text>
+          <View style={styles.volumePeriodRow}>
+            {VOLUME_PERIODS.map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.volumeChip,
+                  volumePeriod === opt.value && styles.volumeChipSelected,
+                ]}
+                onPress={() => setVolumePeriod(opt.value)}
+              >
+                <Text
+                  style={[
+                    styles.volumeChipText,
+                    volumePeriod === opt.value && styles.volumeChipTextSelected,
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Card>
+      </View>
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
         {exerciseNames.map((name) => (
           <TouchableOpacity
@@ -125,6 +175,20 @@ export default function ProgressScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  volumeSection: { padding: spacing.md, paddingBottom: 0 },
+  volumeValue: { color: colors.textPrimary, fontSize: 34, fontWeight: '800', marginTop: 4 },
+  volumePeriodRow: { flexDirection: 'row', gap: 8, marginTop: 14, flexWrap: 'wrap' },
+  volumeChip: {
+    backgroundColor: colors.surfaceSunken,
+    borderRadius: radius.pill,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  volumeChipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
+  volumeChipText: { color: colors.textSecondary, fontSize: 12, fontWeight: '600' },
+  volumeChipTextSelected: { color: colors.textPrimary },
   chipRow: { flexGrow: 0, paddingVertical: 12, paddingLeft: 16 },
   chip: {
     backgroundColor: colors.surface,
