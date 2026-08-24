@@ -9,6 +9,7 @@ import StartWorkoutScreen from '../screens/StartWorkoutScreen';
 import ActiveWorkoutScreen from '../screens/ActiveWorkoutScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import ProgressScreen from '../screens/ProgressScreen';
+import StreakScreen from '../screens/StreakScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
 
@@ -28,7 +29,9 @@ function PlansStack() {
       <Stack.Screen
         name="CreatePlan"
         component={CreatePlanScreen}
-        options={{ title: 'Neuer Plan' }}
+        options={({ route }) => ({
+          title: route.params?.planId ? 'Plan bearbeiten' : 'Neuer Plan',
+        })}
       />
       <Stack.Screen name="PlanDetail" component={PlanDetailScreen} options={{ title: 'Plan' }} />
       <Stack.Screen
@@ -85,6 +88,18 @@ export default function RootNavigator() {
           headerTintColor: screenOptions.headerTintColor,
           headerTitleStyle: screenOptions.headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>📈</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="StreakTab"
+        component={StreakScreen}
+        options={{
+          title: 'Streak',
+          headerShown: true,
+          headerStyle: screenOptions.headerStyle,
+          headerTintColor: screenOptions.headerTintColor,
+          headerTitleStyle: screenOptions.headerTitleStyle,
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>🔥</Text>,
         }}
       />
       <Tab.Screen

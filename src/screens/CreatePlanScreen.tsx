@@ -20,35 +20,53 @@ function makeId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export default function CreatePlanScreen({ navigation }: Props) {
-  const { addPlan } = useAppData();
-  const [planName, setPlanName] = useState('');
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+export default function CreatePlanScreen({ navigation, route }: Props) {
+  const { plans, addPlan, updatePlan } = useAppData();
+  const editingPlanId = route.params?.planId;
+  const existingPlan = editingPlanId ? plans.find((p) => p.id === editingPlanId) : undefined;
+
+  const [planName, setPlanName] = useState(existingPlan?.name ?? '');
+  const [exercises, setExercises] = useState<Exercise[]>(existingPlan?.exercises ?? []);
+  const [editingExerciseId, setEditingExerciseId] = useState<string | undefined>(undefined);
   const [exerciseName, setExerciseName] = useState('');
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
 
-  function handleAddExercise() {
-    if (!exerciseName.trim()) return;
-    setExercises((prev) => [
-      ...prev,
-      {
-        id: makeId(),
-        name: exerciseName.trim(),
-        sets: parseInt(sets, 10) || 1,
-        reps: parseInt(reps, 10) || 1,
-        photoUri,
-      },
-    ]);
+  function resetExerciseForm() {
+    setEditingExerciseId(undefined);
     setExerciseName('');
     setSets('3');
     setReps('10');
     setPhotoUri(undefined);
   }
 
+  function handleSubmitExercise() {
+    if (!exerciseName.trim()) return;
+    const updated: Exercise = {
+      id: editingExerciseId ?? makeId(),
+      name: exerciseName.trim(),
+      sets: parseInt(sets, 10) || 1,
+      reps: parseInt(reps, 10) || 1,
+      photoUri,
+    };
+    setExercises((prev) =>
+      editingExerciseId ? prev.map((e) => (e.id === editingExerciseId ? updated : e)) : [...prev, updated]
+    );
+    resetExerciseForm();
+  }
+
+  function handleEditExercise(ex: Exercise) {
+    setEditingExerciseId(ex.id);
+    setExerciseName(ex.name);
+    setSets(String(ex.sets));
+    setReps(String(ex.reps));
+    setPhotoUri(ex.photoUri);
+  }
+
   function handleRemoveExercise(id: string) {
     setExercises((prev) => prev.filter((e) => e.id !== id));
+    if (editingExerciseId === id) resetExerciseForm();
   }
 
   function handleChangeExercisePhoto(id: string, uri: string | undefined) {
@@ -64,13 +82,17 @@ export default function CreatePlanScreen({ navigation }: Props) {
       Alert.alert('Keine Übungen', 'Füge mindestens eine Übung hinzu.');
       return;
     }
-    const plan: WorkoutPlan = {
-      id: makeId(),
-      name: planName.trim(),
-      exercises,
-      createdAt: new Date().toISOString(),
-    };
-    await addPlan(plan);
+    if (existingPlan) {
+      await updatePlan({ ...existingPlan, name: planName.trim(), exercises });
+    } else {
+      const plan: WorkoutPlan = {
+        id: makeId(),
+        name: planName.trim(),
+        exercises,
+        createdAt: new Date().toISOString(),
+      };
+      await addPlan(plan);
+    }
     navigation.goBack();
   }
 
@@ -87,14 +109,20 @@ export default function CreatePlanScreen({ navigation }: Props) {
 
       <Text style={styles.sectionTitle}>Übungen</Text>
       {exercises.map((ex) => (
-        <View key={ex.id} style={styles.exerciseRow}>
+        <View
+          key={ex.id}
+          style={[styles.exerciseRow, editingExerciseId === ex.id && styles.exerciseRowEditing]}
+        >
           <ExercisePhotoPicker
             photoUri={ex.photoUri}
             onChange={(uri) => handleChangeExercisePhoto(ex.id, uri)}
           />
-          <Text style={[styles.exerciseText, { flex: 1, marginLeft: 12 }]}>
-            {ex.name} — {ex.sets}×{ex.reps}
-          </Text>
+          <TouchableOpacity style={{ flex: 1, marginLeft: 12 }} onPress={() => handleEditExercise(ex)}>
+            <Text style={styles.exerciseText}>
+              {ex.name} — {ex.sets}×{ex.reps}
+            </Text>
+            <Text style={styles.editHint}>Antippen zum Bearbeiten</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => handleRemoveExercise(ex.id)}>
             <Text style={styles.removeText}>Entfernen</Text>
           </TouchableOpacity>
@@ -102,6 +130,14 @@ export default function CreatePlanScreen({ navigation }: Props) {
       ))}
 
       <View style={styles.addExerciseBox}>
+        {editingExerciseId && (
+          <View style={styles.editingBanner}>
+            <Text style={styles.editingBannerText}>Übung wird bearbeitet</Text>
+            <TouchableOpacity onPress={resetExerciseForm}>
+              <Text style={styles.editingBannerCancel}>Abbrechen</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <View style={styles.row}>
           <ExercisePhotoPicker photoUri={photoUri} onChange={setPhotoUri} size={64} />
           <TextInput
@@ -132,13 +168,17 @@ export default function CreatePlanScreen({ navigation }: Props) {
             />
           </View>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddExercise}>
-          <Text style={styles.addButtonText}>+ Übung hinzufügen</Text>
+        <TouchableOpacity style={styles.addButton} onPress={handleSubmitExercise}>
+          <Text style={styles.addButtonText}>
+            {editingExerciseId ? 'Übung aktualisieren' : '+ Übung hinzufügen'}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSavePlan}>
-        <Text style={styles.saveButtonText}>Plan speichern</Text>
+        <Text style={styles.saveButtonText}>
+          {existingPlan ? 'Änderungen speichern' : 'Plan speichern'}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -165,10 +205,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     marginBottom: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
+  exerciseRowEditing: { borderColor: '#ff5a3c' },
   exerciseText: { color: '#fff', fontSize: 15 },
+  editHint: { color: '#6b7280', fontSize: 11, marginTop: 2 },
   removeText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
   addExerciseBox: { marginTop: 12, backgroundColor: '#151821', borderRadius: 12, padding: 12 },
+  editingBanner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#2a1e1a',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 4,
+  },
+  editingBannerText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
+  editingBannerCancel: { color: '#9aa0ac', fontSize: 13 },
   row: { flexDirection: 'row', gap: 12, alignItems: 'center', marginTop: 12 },
   rowItem: { flex: 1 },
   addButton: {

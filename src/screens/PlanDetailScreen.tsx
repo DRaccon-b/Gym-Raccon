@@ -25,7 +25,17 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
         data={plan.exercises}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListHeaderComponent={<Text style={styles.title}>{plan.name}</Text>}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.title}>{plan.name}</Text>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => navigation.navigate('CreatePlan', { planId: plan.id })}
+            >
+              <Text style={styles.editButtonText}>Bearbeiten</Text>
+            </TouchableOpacity>
+          </View>
+        }
         renderItem={({ item }) => (
           <View style={[styles.card, styles.cardRow]}>
             {item.photoUri ? (
@@ -57,7 +67,20 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f1115' },
   list: { padding: 16, paddingBottom: 96 },
-  title: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 16 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  title: { color: '#fff', fontSize: 24, fontWeight: '700' },
+  editButton: {
+    backgroundColor: '#1b1e26',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  editButtonText: { color: '#ff5a3c', fontSize: 13, fontWeight: '600' },
   card: { backgroundColor: '#1b1e26', borderRadius: 14, padding: 16, marginBottom: 10 },
   cardRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   thumb: { width: 48, height: 48, borderRadius: 12 },

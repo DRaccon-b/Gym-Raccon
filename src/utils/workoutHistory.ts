@@ -38,6 +38,33 @@ export function getExerciseProgress(
   return points.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
 
+function dateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+export function getTrainedDateKeys(sessions: WorkoutSession[]): Set<string> {
+  return new Set(sessions.map((s) => dateKey(new Date(s.date))));
+}
+
+export function getCurrentStreak(sessions: WorkoutSession[]): number {
+  const trained = getTrainedDateKeys(sessions);
+  const cursor = new Date();
+  if (!trained.has(dateKey(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  let streak = 0;
+  while (trained.has(dateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
+export { dateKey };
+
 export function findLastLoggedExercise(
   exerciseName: string,
   sessions: WorkoutSession[]

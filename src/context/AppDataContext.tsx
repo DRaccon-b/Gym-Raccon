@@ -7,6 +7,7 @@ type AppDataContextValue = {
   sessions: WorkoutSession[];
   loading: boolean;
   addPlan: (plan: WorkoutPlan) => Promise<void>;
+  updatePlan: (plan: WorkoutPlan) => Promise<void>;
   deletePlan: (planId: string) => Promise<void>;
   addSession: (session: WorkoutSession) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
@@ -32,6 +33,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const addPlan = useCallback(async (plan: WorkoutPlan) => {
     setPlans((prev) => {
       const next = [...prev, plan];
+      savePlans(next);
+      return next;
+    });
+  }, []);
+
+  const updatePlan = useCallback(async (plan: WorkoutPlan) => {
+    setPlans((prev) => {
+      const next = prev.map((p) => (p.id === plan.id ? plan : p));
       savePlans(next);
       return next;
     });
@@ -74,6 +83,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         sessions,
         loading,
         addPlan,
+        updatePlan,
         deletePlan,
         addSession,
         deleteSession,
