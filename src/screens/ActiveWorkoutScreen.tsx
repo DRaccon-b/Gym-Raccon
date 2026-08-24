@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   setLabel: { color: colors.textPrimary, fontSize: 14, fontWeight: '700' },
-  setInputs: { flexDirection: 'row', gap: 12 },
+  setInputs: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
   prevText: { color: colors.textMuted, fontSize: 12 },
   restButton: {
     marginTop: 8,
