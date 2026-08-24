@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Switch } from 'react-native';
 import { useSettings } from '../context/SettingsContext';
 import { useAppData } from '../context/AppDataContext';
 import { APP_VERSION } from '../constants/version';
@@ -19,7 +19,7 @@ function formatSeconds(seconds: number): string {
 }
 
 export default function SettingsScreen() {
-  const { restSeconds, setRestSeconds } = useSettings();
+  const { restSeconds, setRestSeconds, showVolume, setShowVolume } = useSettings();
   const { clearAllData } = useAppData();
 
   function handleClearAll() {
@@ -75,6 +75,22 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </Card>
 
+      <Text style={[styles.sectionTitle, { marginTop: 40 }]}>Fortschritt</Text>
+      <Card style={styles.switchRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.switchLabel}>Bewegtes Gewicht anzeigen</Text>
+          <Text style={styles.switchHint}>
+            Zeigt unten im Fortschritt-Tab an, wie viel Gewicht du insgesamt bewegt hast.
+          </Text>
+        </View>
+        <Switch
+          value={showVolume}
+          onValueChange={setShowVolume}
+          trackColor={{ false: colors.surfaceRaised, true: colors.accent }}
+          thumbColor={colors.textPrimary}
+        />
+      </Card>
+
       <Text style={[styles.sectionTitle, { marginTop: 40 }]}>Gefahrenzone</Text>
       <Text style={styles.sectionSubtitle}>
         Löscht alle Trainingspläne, den Workout-Verlauf und alle Fortschrittsdaten unwiderruflich.
@@ -117,6 +133,9 @@ const styles = StyleSheet.create({
     minWidth: 110,
     textAlign: 'center',
   },
+  switchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  switchLabel: { color: colors.textPrimary, fontSize: 15, fontWeight: '600' },
+  switchHint: { ...typography.body, fontSize: 12, marginTop: 4 },
   dangerButton: {
     marginTop: 4,
     backgroundColor: 'rgba(239, 68, 68, 0.1)',

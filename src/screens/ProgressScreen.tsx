@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useAppData } from '../context/AppDataContext';
+import { useSettings } from '../context/SettingsContext';
 import {
   getExerciseProgress,
   getLoggedExerciseNames,
@@ -29,6 +30,7 @@ const VOLUME_PERIODS: { value: VolumePeriod; label: string }[] = [
 
 export default function ProgressScreen() {
   const { sessions } = useAppData();
+  const { showVolume } = useSettings();
   const { width } = useWindowDimensions();
   const exerciseNames = useMemo(() => getLoggedExerciseNames(sessions), [sessions]);
   const [selected, setSelected] = useState<string | undefined>(exerciseNames[0]);
@@ -63,34 +65,6 @@ export default function ProgressScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.volumeSection}>
-        <Card>
-          <Text style={styles.chartTitle}>Bewegtes Gewicht</Text>
-          <Text style={styles.volumeValue}>{formatVolume(totalVolume)}</Text>
-          <View style={styles.volumePeriodRow}>
-            {VOLUME_PERIODS.map((opt) => (
-              <TouchableOpacity
-                key={opt.value}
-                style={[
-                  styles.volumeChip,
-                  volumePeriod === opt.value && styles.volumeChipSelected,
-                ]}
-                onPress={() => setVolumePeriod(opt.value)}
-              >
-                <Text
-                  style={[
-                    styles.volumeChipText,
-                    volumePeriod === opt.value && styles.volumeChipTextSelected,
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </Card>
-      </View>
-
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
         {exerciseNames.map((name) => (
           <TouchableOpacity
@@ -166,6 +140,36 @@ export default function ProgressScreen() {
                 </View>
               ))}
             </View>
+
+            {showVolume && (
+              <View style={styles.volumeCompact}>
+                <Text style={styles.volumeCompactLabel}>Bewegtes Gewicht</Text>
+                <View style={styles.volumeCompactRow}>
+                  <Text style={styles.volumeCompactValue}>{formatVolume(totalVolume)}</Text>
+                  <View style={styles.volumeChipRowCompact}>
+                    {VOLUME_PERIODS.map((opt) => (
+                      <TouchableOpacity
+                        key={opt.value}
+                        style={[
+                          styles.volumeChipCompact,
+                          volumePeriod === opt.value && styles.volumeChipSelected,
+                        ]}
+                        onPress={() => setVolumePeriod(opt.value)}
+                      >
+                        <Text
+                          style={[
+                            styles.volumeChipTextCompact,
+                            volumePeriod === opt.value && styles.volumeChipTextSelected,
+                          ]}
+                        >
+                          {opt.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              </View>
+            )}
           </>
         )}
       </ScrollView>
@@ -175,19 +179,26 @@ export default function ProgressScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  volumeSection: { padding: spacing.md, paddingBottom: 0 },
-  volumeValue: { color: colors.textPrimary, fontSize: 34, fontWeight: '800', marginTop: 4 },
-  volumePeriodRow: { flexDirection: 'row', gap: 8, marginTop: 14, flexWrap: 'wrap' },
-  volumeChip: {
+  volumeCompact: {
+    marginTop: 4,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.surface,
+  },
+  volumeCompactLabel: { ...typography.label, marginBottom: 6 },
+  volumeCompactRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  volumeCompactValue: { color: colors.textSecondary, fontSize: 15, fontWeight: '700' },
+  volumeChipRowCompact: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', flex: 1 },
+  volumeChipCompact: {
     backgroundColor: colors.surfaceSunken,
     borderRadius: radius.pill,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: colors.border,
   },
   volumeChipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
-  volumeChipText: { color: colors.textSecondary, fontSize: 12, fontWeight: '600' },
+  volumeChipTextCompact: { color: colors.textMuted, fontSize: 10, fontWeight: '600' },
   volumeChipTextSelected: { color: colors.textPrimary },
   chipRow: { flexGrow: 0, paddingVertical: 12, paddingLeft: 16 },
   chip: {
