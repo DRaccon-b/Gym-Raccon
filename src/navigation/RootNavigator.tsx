@@ -8,6 +8,7 @@ import PlanDetailScreen from '../screens/PlanDetailScreen';
 import StartWorkoutScreen from '../screens/StartWorkoutScreen';
 import ActiveWorkoutScreen from '../screens/ActiveWorkoutScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import ProgressScreen from '../screens/ProgressScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
 
@@ -72,6 +73,18 @@ export default function RootNavigator() {
           headerTintColor: screenOptions.headerTintColor,
           headerTitleStyle: screenOptions.headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>📊</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="ProgressTab"
+        component={ProgressScreen}
+        options={{
+          title: 'Fortschritt',
+          headerShown: true,
+          headerStyle: screenOptions.headerStyle,
+          headerTintColor: screenOptions.headerTintColor,
+          headerTitleStyle: screenOptions.headerTitleStyle,
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>📈</Text>,
         }}
       />
       <Tab.Screen

@@ -11,6 +11,33 @@ export function adjustWeightForEnergy(weightKg: number, energy: EnergyLevel): nu
   return weightKg;
 }
 
+export type ProgressPoint = {
+  date: string;
+  maxWeight: number;
+  totalVolume: number;
+};
+
+export function getLoggedExerciseNames(sessions: WorkoutSession[]): string[] {
+  const names = new Set<string>();
+  sessions.forEach((session) => session.exercises.forEach((ex) => names.add(ex.name)));
+  return Array.from(names).sort((a, b) => a.localeCompare(b));
+}
+
+export function getExerciseProgress(
+  exerciseName: string,
+  sessions: WorkoutSession[]
+): ProgressPoint[] {
+  const points: ProgressPoint[] = [];
+  sessions.forEach((session) => {
+    const match = session.exercises.find((ex) => ex.name === exerciseName);
+    if (!match || match.sets.length === 0) return;
+    const maxWeight = Math.max(...match.sets.map((s) => s.weightKg));
+    const totalVolume = match.sets.reduce((sum, s) => sum + s.weightKg * s.reps, 0);
+    points.push({ date: session.date, maxWeight, totalVolume });
+  });
+  return points.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
+
 export function findLastLoggedExercise(
   exerciseName: string,
   sessions: WorkoutSession[]
