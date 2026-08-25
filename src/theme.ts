@@ -64,7 +64,19 @@ export const gradients = {
   surface: ['#1f2330', '#161922'] as const,
 };
 
-export type AccentKey = 'orange' | 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'pink' | 'teal';
+export type AccentKey =
+  | 'orange'
+  | 'blue'
+  | 'green'
+  | 'yellow'
+  | 'red'
+  | 'purple'
+  | 'pink'
+  | 'teal'
+  | 'cyan'
+  | 'indigo'
+  | 'lime'
+  | 'brown';
 
 export type AccentTheme = {
   key: AccentKey;
@@ -148,6 +160,42 @@ export const ACCENT_THEMES: Record<AccentKey, AccentTheme> = {
     dim: '#0d9488',
     glow: 'rgba(20, 184, 166, 0.18)',
     gradient: ['#2dd4bf', '#14b8a6', '#0f766e'],
+  },
+  cyan: {
+    key: 'cyan',
+    label: 'Cyan',
+    swatch: '#22d3ee',
+    color: '#22d3ee',
+    dim: '#0891b2',
+    glow: 'rgba(34, 211, 238, 0.18)',
+    gradient: ['#67e8f9', '#22d3ee', '#0e7490'],
+  },
+  indigo: {
+    key: 'indigo',
+    label: 'Indigo',
+    swatch: '#6366f1',
+    color: '#6366f1',
+    dim: '#4338ca',
+    glow: 'rgba(99, 102, 241, 0.18)',
+    gradient: ['#818cf8', '#6366f1', '#4338ca'],
+  },
+  lime: {
+    key: 'lime',
+    label: 'Limette',
+    swatch: '#a3e635',
+    color: '#a3e635',
+    dim: '#65a30d',
+    glow: 'rgba(163, 230, 53, 0.18)',
+    gradient: ['#bef264', '#a3e635', '#4d7c0f'],
+  },
+  brown: {
+    key: 'brown',
+    label: 'Braun',
+    swatch: '#a8734a',
+    color: '#a8734a',
+    dim: '#7c5334',
+    glow: 'rgba(168, 115, 74, 0.18)',
+    gradient: ['#c99a6e', '#a8734a', '#7c5334'],
   },
 };
 

@@ -8,7 +8,20 @@ type Props = {
   onChange: (key: AccentKey) => void;
 };
 
-const ORDER: AccentKey[] = ['orange', 'blue', 'green', 'yellow', 'red', 'purple', 'pink', 'teal'];
+const ORDER: AccentKey[] = [
+  'orange',
+  'blue',
+  'green',
+  'yellow',
+  'red',
+  'purple',
+  'pink',
+  'teal',
+  'cyan',
+  'indigo',
+  'lime',
+  'brown',
+];
 
 export default function AccentColorPicker({ value, onChange }: Props) {
   const { colors } = useSettings();
