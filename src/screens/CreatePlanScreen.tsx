@@ -119,25 +119,7 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {!existingPlan && (
-        <>
-          <Text style={styles.sectionTitleFirst}>Vorlage verwenden (optional)</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.templateRow}>
-            {PLAN_TEMPLATES.map((template) => (
-              <TouchableOpacity
-                key={template.key}
-                style={styles.templateChip}
-                onPress={() => applyTemplate(template.key)}
-              >
-                <Text style={styles.templateEmoji}>{template.emoji}</Text>
-                <Text style={styles.templateLabel}>{template.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </>
-      )}
-
-      <Text style={styles.label}>Plan-Name</Text>
+      <Text style={[styles.label, { marginTop: 0 }]}>Plan-Name</Text>
       <TextInput
         style={styles.input}
         placeholder="z. B. Push Day"
@@ -219,6 +201,24 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
         </TouchableOpacity>
       </View>
 
+      {!existingPlan && (
+        <View>
+          <Text style={styles.sectionTitle}>Vorlage verwenden (optional)</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.templateRow}>
+            {PLAN_TEMPLATES.map((template) => (
+              <TouchableOpacity
+                key={template.key}
+                style={styles.templateChip}
+                onPress={() => applyTemplate(template.key)}
+              >
+                <Text style={styles.templateEmoji}>{template.emoji}</Text>
+                <Text style={styles.templateLabel}>{template.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       <GradientButton
         label={existingPlan ? 'Änderungen speichern' : 'Plan speichern'}
         onPress={handleSavePlan}
@@ -243,7 +243,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   sectionTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 24, marginBottom: 8 },
-  sectionTitleFirst: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 10 },
   templateRow: { flexGrow: 0, marginBottom: 8 },
   templateChip: {
     backgroundColor: colors.surface,
