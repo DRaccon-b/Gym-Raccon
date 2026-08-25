@@ -21,6 +21,7 @@ type AppDataContextValue = {
   deleteSession: (sessionId: string) => Promise<void>;
   toggleRestDay: (dateKey: string) => Promise<void>;
   clearAllData: () => Promise<void>;
+  importAllData: (data: { plans: WorkoutPlan[]; sessions: WorkoutSession[]; restDays: string[] }) => Promise<void>;
 };
 
 const AppDataContext = createContext<AppDataContextValue | undefined>(undefined);
@@ -102,6 +103,20 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     await Promise.all([savePlans([]), saveSessions([]), saveRestDays([])]);
   }, []);
 
+  const importAllData = useCallback(
+    async (data: { plans: WorkoutPlan[]; sessions: WorkoutSession[]; restDays: string[] }) => {
+      setPlans(data.plans);
+      setSessions(data.sessions);
+      setRestDays(data.restDays);
+      await Promise.all([
+        savePlans(data.plans),
+        saveSessions(data.sessions),
+        saveRestDays(data.restDays),
+      ]);
+    },
+    []
+  );
+
   return (
     <AppDataContext.Provider
       value={{
@@ -116,6 +131,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         deleteSession,
         toggleRestDay,
         clearAllData,
+        importAllData,
       }}
     >
       {children}

@@ -8,6 +8,7 @@ import AccentColorPicker from '../components/AccentColorPicker';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { radius, spacing, Colors, Typography } from '../theme';
 import { ThemeMode } from '../storage/settingsStorage';
+import { buildExportPayload, exportData, importData } from '../utils/exportImport';
 
 const STEP = 15;
 const MIN_SECONDS = 15;
@@ -42,8 +43,16 @@ export default function SettingsScreen() {
     typography,
   } = useSettings();
   const styles = useMemo(() => makeStyles(colors, typography), [colors, typography]);
-  const { clearAllData } = useAppData();
+  const { plans, sessions, restDays, clearAllData, importAllData } = useAppData();
   const [clearStep, setClearStep] = useState<0 | 1 | 2>(0);
+  const [pendingImport, setPendingImport] = useState<{
+    plans: typeof plans;
+    sessions: typeof sessions;
+    restDays: string[];
+  } | null>(null);
+  const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   function handleClearAll() {
     setClearStep(1);
@@ -60,6 +69,42 @@ export default function SettingsScreen() {
 
   function handleCancelClear() {
     setClearStep(0);
+  }
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await exportData(buildExportPayload(plans, sessions, restDays));
+    } catch {
+      setImportMessage('Export fehlgeschlagen. Bitte versuche es erneut.');
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleImportPick() {
+    setImporting(true);
+    try {
+      const data = await importData();
+      if (!data) {
+        setImportMessage('Keine gültige Backup-Datei ausgewählt.');
+        return;
+      }
+      setPendingImport({ plans: data.plans, sessions: data.sessions, restDays: data.restDays ?? [] });
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  async function handleConfirmImport() {
+    if (!pendingImport) return;
+    await importAllData(pendingImport);
+    setPendingImport(null);
+    setImportMessage('Backup erfolgreich importiert.');
+  }
+
+  function handleCancelImport() {
+    setPendingImport(null);
   }
 
   function decrease() {
@@ -137,6 +182,23 @@ export default function SettingsScreen() {
         <Text style={styles.dangerButtonText}>Alle Daten löschen</Text>
       </TouchableOpacity>
 
+      <Text style={[styles.sectionTitle, { marginTop: 40 }]}>Backup</Text>
+      <Text style={styles.sectionSubtitle}>
+        Sichere all deine Pläne, deinen Verlauf und Ruhetage als Datei oder stelle sie wieder her.
+      </Text>
+      <View style={styles.backupRow}>
+        <TouchableOpacity
+          style={styles.backupButton}
+          onPress={handleExport}
+          disabled={exporting || plans.length + sessions.length === 0}
+        >
+          <Text style={styles.backupButtonText}>⬆️ Exportieren</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.backupButton} onPress={handleImportPick} disabled={importing}>
+          <Text style={styles.backupButtonText}>⬇️ Importieren</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.version}>{APP_VERSION}</Text>
 
       <Modal
@@ -173,6 +235,54 @@ export default function SettingsScreen() {
                 <Text style={styles.modalDangerText}>
                   {clearStep === 1 ? 'Endgültig löschen' : 'Ja, alles löschen'}
                 </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={pendingImport !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCancelImport}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Backup importieren?</Text>
+            <Text style={styles.modalMessage}>
+              {pendingImport
+                ? `${pendingImport.plans.length} Pläne und ${pendingImport.sessions.length} Workouts aus der Datei ersetzen deine aktuellen Daten unwiderruflich.`
+                : ''}
+            </Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalCancelButton} onPress={handleCancelImport}>
+                <Text style={styles.modalCancelText}>Abbrechen</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalDangerButton} onPress={handleConfirmImport}>
+                <Text style={styles.modalDangerText}>Importieren</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={importMessage !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setImportMessage(null)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Backup</Text>
+            <Text style={styles.modalMessage}>{importMessage}</Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalCancelButton, { flex: 1 }]}
+                onPress={() => setImportMessage(null)}
+              >
+                <Text style={styles.modalCancelText}>OK</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -238,6 +348,17 @@ function makeStyles(colors: Colors, typography: Typography) {
       alignItems: 'center',
     },
     dangerButtonText: { color: colors.danger, fontSize: 15, fontWeight: '700' },
+    backupRow: { flexDirection: 'row', gap: 12 },
+    backupButton: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      paddingVertical: 14,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    backupButtonText: { color: colors.textPrimary, fontSize: 14, fontWeight: '700' },
     version: { color: colors.textMuted, fontSize: 12, textAlign: 'center', marginTop: 32 },
     modalBackdrop: {
       flex: 1,
