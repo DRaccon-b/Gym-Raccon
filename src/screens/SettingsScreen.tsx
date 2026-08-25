@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Switch, ScrollView, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useSettings } from '../context/SettingsContext';
 import { useAppData } from '../context/AppDataContext';
 import { APP_VERSION } from '../constants/version';
 import Card from '../components/Card';
 import AccentColorPicker from '../components/AccentColorPicker';
+import ToggleSwitch from '../components/ToggleSwitch';
 import { radius, spacing, Colors, Typography } from '../theme';
 import { ThemeMode } from '../storage/settingsStorage';
 
@@ -125,12 +126,7 @@ export default function SettingsScreen() {
             Zeigt unten im Fortschritt-Tab an, wie viel Gewicht du insgesamt bewegt hast.
           </Text>
         </View>
-        <Switch
-          value={showVolume}
-          onValueChange={setShowVolume}
-          trackColor={{ false: colors.surfaceRaised, true: accent.color }}
-          thumbColor={colors.textPrimary}
-        />
+        <ToggleSwitch value={showVolume} onValueChange={setShowVolume} />
       </Card>
 
       <Text style={[styles.sectionTitle, { marginTop: 40 }]}>Gefahrenzone</Text>
