@@ -13,6 +13,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
 import { Exercise, WorkoutPlan } from '../types';
 import ExercisePhotoPicker from '../components/ExercisePhotoPicker';
+import DraggableExerciseList from '../components/DraggableExerciseList';
 import GradientButton from '../components/GradientButton';
 import { colors, radius, spacing } from '../theme';
 import { useSettings } from '../context/SettingsContext';
@@ -129,29 +130,15 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
       />
 
       <Text style={styles.sectionTitle}>Übungen</Text>
-      {exercises.map((ex) => (
-        <View
-          key={ex.id}
-          style={[
-            styles.exerciseRow,
-            editingExerciseId === ex.id && { borderColor: accent.color },
-          ]}
-        >
-          <ExercisePhotoPicker
-            photoUri={ex.photoUri}
-            onChange={(uri) => handleChangeExercisePhoto(ex.id, uri)}
-          />
-          <TouchableOpacity style={{ flex: 1, marginLeft: 12 }} onPress={() => handleEditExercise(ex)}>
-            <Text style={styles.exerciseText}>
-              {ex.name} — {ex.sets}×{ex.reps}
-            </Text>
-            <Text style={styles.editHint}>Antippen zum Bearbeiten</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleRemoveExercise(ex.id)}>
-            <Text style={[styles.removeText, { color: accent.color }]}>Entfernen</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+      <DraggableExerciseList
+        exercises={exercises}
+        editingExerciseId={editingExerciseId}
+        accentColor={accent.color}
+        onReorder={setExercises}
+        onPressItem={handleEditExercise}
+        onRemove={handleRemoveExercise}
+        onPhotoChange={handleChangeExercisePhoto}
+      />
 
       <View style={styles.addExerciseBox}>
         {editingExerciseId && (
@@ -257,20 +244,6 @@ const styles = StyleSheet.create({
   },
   templateEmoji: { fontSize: 22, marginBottom: 4 },
   templateLabel: { color: colors.textPrimary, fontSize: 13, fontWeight: '600' },
-  exerciseRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: radius.sm,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  exerciseText: { color: colors.textPrimary, fontSize: 15 },
-  editHint: { color: colors.textMuted, fontSize: 11, marginTop: 2 },
-  removeText: { fontSize: 13, fontWeight: '600' },
   addExerciseBox: {
     marginTop: 12,
     backgroundColor: colors.surfaceSunken,
