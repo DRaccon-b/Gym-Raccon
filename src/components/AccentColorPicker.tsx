@@ -31,7 +31,7 @@ export default function AccentColorPicker({ value, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 16 },
+  row: { flexDirection: 'row', gap: 16, justifyContent: 'center' },
   swatch: {
     width: 40,
     height: 40,
