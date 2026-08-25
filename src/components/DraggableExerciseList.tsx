@@ -125,6 +125,7 @@ export default function DraggableExerciseList({
             <TouchableOpacity style={styles.info} onPress={() => onPressItem(ex)}>
               <Text style={styles.exerciseText} numberOfLines={1}>
                 {ex.name} — {ex.sets}×{ex.reps}
+                {ex.weightKg ? ` @ ${ex.weightKg} kg` : ''}
               </Text>
               <Text style={styles.editHint}>Antippen zum Bearbeiten</Text>
             </TouchableOpacity>

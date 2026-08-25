@@ -55,6 +55,7 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
               <Text style={styles.cardTitle}>{item.name}</Text>
               <Text style={styles.cardSubtitle}>
                 {item.sets} Sätze × {item.reps} Wiederholungen
+                {item.weightKg ? ` · ${item.weightKg} kg` : ''}
               </Text>
             </View>
           </Card>

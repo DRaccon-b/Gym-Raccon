@@ -38,6 +38,7 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
   const [exerciseName, setExerciseName] = useState('');
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
+  const [weightKg, setWeightKg] = useState('');
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
 
   function applyTemplate(templateKey: string) {
@@ -61,16 +62,19 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
     setExerciseName('');
     setSets('3');
     setReps('10');
+    setWeightKg('');
     setPhotoUri(undefined);
   }
 
   function handleSubmitExercise() {
     if (!exerciseName.trim()) return;
+    const parsedWeight = parseFloat(weightKg.replace(',', '.'));
     const updated: Exercise = {
       id: editingExerciseId ?? makeId(),
       name: exerciseName.trim(),
       sets: parseInt(sets, 10) || 1,
       reps: parseInt(reps, 10) || 1,
+      weightKg: Number.isFinite(parsedWeight) && parsedWeight >= 0 ? parsedWeight : undefined,
       photoUri,
     };
     setExercises((prev) =>
@@ -84,6 +88,7 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
     setExerciseName(ex.name);
     setSets(String(ex.sets));
     setReps(String(ex.reps));
+    setWeightKg(ex.weightKg !== undefined ? String(ex.weightKg) : '');
     setPhotoUri(ex.photoUri);
   }
 
@@ -179,6 +184,19 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
               keyboardType="number-pad"
               value={reps}
               onChangeText={setReps}
+            />
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.rowItem}>
+            <Text style={styles.label}>Startgewicht (kg, optional)</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="decimal-pad"
+              placeholder="z. B. 20"
+              placeholderTextColor="#6b7280"
+              value={weightKg}
+              onChangeText={setWeightKg}
             />
           </View>
         </View>
