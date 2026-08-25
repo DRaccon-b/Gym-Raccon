@@ -32,7 +32,7 @@ function makeId(): string {
 export default function ActiveWorkoutScreen({ route, navigation }: Props) {
   const { planId, startExerciseId, energyLevel } = route.params;
   const { plans, sessions, addSession } = useAppData();
-  const { restSeconds } = useSettings();
+  const { restSeconds, accent } = useSettings();
   const plan = plans.find((p) => p.id === planId);
   const startedAt = useMemo(() => Date.now(), []);
 
@@ -102,6 +102,30 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
       const sets = [...entry.sets];
       sets[setIndex] = { ...sets[setIndex], [field]: value };
       next.set(currentExerciseId, { ...entry, sets });
+      return next;
+    });
+  }
+
+  function addSet() {
+    setLogByExercise((prev) => {
+      const next = new Map(prev);
+      const entry = next.get(currentExerciseId);
+      if (!entry) return prev;
+      const lastSet = entry.sets[entry.sets.length - 1];
+      const newSet: LoggedSet = lastSet
+        ? { ...lastSet }
+        : { reps: currentExercise?.reps ?? 10, weightKg: currentExercise?.weightKg ?? 0 };
+      next.set(currentExerciseId, { ...entry, sets: [...entry.sets, newSet] });
+      return next;
+    });
+  }
+
+  function removeSet() {
+    setLogByExercise((prev) => {
+      const next = new Map(prev);
+      const entry = next.get(currentExerciseId);
+      if (!entry || entry.sets.length <= 1) return prev;
+      next.set(currentExerciseId, { ...entry, sets: entry.sets.slice(0, -1) });
       return next;
     });
   }
@@ -197,6 +221,29 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
             );
           })}
 
+          <View style={styles.setControlRow}>
+            <Text style={styles.setControlLabel}>Sätze</Text>
+            <View style={styles.setControlButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.setControlButton,
+                  { backgroundColor: accent.glow },
+                  currentLog.sets.length <= 1 && styles.setControlButtonDisabled,
+                ]}
+                onPress={removeSet}
+                disabled={currentLog.sets.length <= 1}
+              >
+                <Text style={[styles.setControlButtonText, { color: accent.color }]}>−</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.setControlButton, { backgroundColor: accent.glow }]}
+                onPress={addSet}
+              >
+                <Text style={[styles.setControlButtonText, { color: accent.color }]}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <TouchableOpacity style={styles.restButton} onPress={() => setShowTimer(true)}>
             <Text style={styles.restButtonText}>⏱ Satzpause starten</Text>
           </TouchableOpacity>
@@ -252,6 +299,23 @@ const styles = StyleSheet.create({
   setLabel: { color: colors.textPrimary, fontSize: 14, fontWeight: '700' },
   setInputs: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
   prevText: { color: colors.textMuted, fontSize: 12 },
+  setControlRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  setControlLabel: { color: colors.textSecondary, fontSize: 13, fontWeight: '600' },
+  setControlButtons: { flexDirection: 'row', gap: 8 },
+  setControlButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  setControlButtonDisabled: { opacity: 0.35 },
+  setControlButtonText: { fontSize: 18, fontWeight: '800', lineHeight: 20 },
   restButton: {
     marginTop: 8,
     backgroundColor: colors.surfaceRaised,

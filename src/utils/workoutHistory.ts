@@ -16,6 +16,7 @@ export type ProgressPoint = {
   maxWeight: number;
   topSetReps: number;
   totalVolume: number;
+  setsCount: number;
 };
 
 export function getLoggedExerciseNames(sessions: WorkoutSession[]): string[] {
@@ -35,7 +36,13 @@ export function getExerciseProgress(
     const maxWeight = Math.max(...match.sets.map((s) => s.weightKg));
     const topSet = match.sets.find((s) => s.weightKg === maxWeight) ?? match.sets[0];
     const totalVolume = match.sets.reduce((sum, s) => sum + s.weightKg * s.reps, 0);
-    points.push({ date: session.date, maxWeight, topSetReps: topSet.reps, totalVolume });
+    points.push({
+      date: session.date,
+      maxWeight,
+      topSetReps: topSet.reps,
+      totalVolume,
+      setsCount: match.sets.length,
+    });
   });
   return points.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }

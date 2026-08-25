@@ -110,6 +110,10 @@ export default function ProgressScreen() {
                 <Text style={styles.statLabel}>Workouts</Text>
                 <Text style={styles.statValue}>{progress.length}</Text>
               </View>
+              <View>
+                <Text style={styles.statLabel}>Sätze</Text>
+                <Text style={styles.statValue}>{latest.setsCount}</Text>
+              </View>
             </Card>
 
             <Card>
@@ -138,7 +142,7 @@ export default function ProgressScreen() {
                 <View key={i} style={styles.historyRow}>
                   <Text style={styles.historyDate}>{formatDate(p.date)}</Text>
                   <Text style={styles.historyValue}>
-                    {p.maxWeight} kg × {p.topSetReps} Wdh.
+                    {p.maxWeight} kg × {p.topSetReps} Wdh. · {p.setsCount} Sätze
                   </Text>
                 </View>
               ))}
@@ -221,6 +225,8 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    rowGap: 12,
   },
   statLabel: { ...typography.label },
   statValue: { color: colors.textPrimary, fontSize: 18, fontWeight: '800', marginTop: 4 },
