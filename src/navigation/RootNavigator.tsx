@@ -10,6 +10,7 @@ import ActiveWorkoutScreen from '../screens/ActiveWorkoutScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import ProgressScreen from '../screens/ProgressScreen';
 import StreakScreen from '../screens/StreakScreen';
+import PRScreen from '../screens/PRScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
 import { useSettings } from '../context/SettingsContext';
@@ -106,6 +107,18 @@ export default function RootNavigator() {
           headerTintColor,
           headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>🔥</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="PRTab"
+        component={PRScreen}
+        options={{
+          title: 'PRs',
+          headerShown: true,
+          headerStyle,
+          headerTintColor,
+          headerTitleStyle,
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>🏆</Text>,
         }}
       />
       <Tab.Screen

@@ -109,6 +109,33 @@ export function getTotalVolume(sessions: WorkoutSession[], period: VolumePeriod)
     .reduce((sum, s) => sum + sessionVolume(s), 0);
 }
 
+export type PersonalRecord = {
+  exerciseName: string;
+  maxWeight: number;
+  reps: number;
+  date: string;
+};
+
+export function getPersonalRecords(sessions: WorkoutSession[]): PersonalRecord[] {
+  const records = new Map<string, PersonalRecord>();
+  sessions.forEach((session) => {
+    session.exercises.forEach((ex) => {
+      ex.sets.forEach((set) => {
+        const current = records.get(ex.name);
+        if (!current || set.weightKg > current.maxWeight) {
+          records.set(ex.name, {
+            exerciseName: ex.name,
+            maxWeight: set.weightKg,
+            reps: set.reps,
+            date: session.date,
+          });
+        }
+      });
+    });
+  });
+  return Array.from(records.values()).sort((a, b) => a.exerciseName.localeCompare(b.exerciseName));
+}
+
 export function findLastLoggedExercise(
   exerciseName: string,
   sessions: WorkoutSession[]
