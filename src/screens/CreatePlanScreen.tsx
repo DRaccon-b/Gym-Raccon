@@ -42,31 +42,16 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
     const template = PLAN_TEMPLATES.find((t) => t.key === templateKey);
     if (!template) return;
 
-    function apply() {
-      setPlanName(template!.label);
-      setExercises(
-        template!.exercises.map((ex) => ({
-          id: makeId(),
-          name: ex.name,
-          sets: ex.sets,
-          reps: ex.reps,
-        }))
-      );
-      resetExerciseForm();
-    }
-
-    if (exercises.length > 0 || planName.trim()) {
-      Alert.alert(
-        'Vorlage übernehmen?',
-        'Das ersetzt den Namen und die aktuellen Übungen mit der Vorlage.',
-        [
-          { text: 'Abbrechen', style: 'cancel' },
-          { text: 'Übernehmen', onPress: apply },
-        ]
-      );
-    } else {
-      apply();
-    }
+    setPlanName(template.label);
+    setExercises(
+      template.exercises.map((ex) => ({
+        id: makeId(),
+        name: ex.name,
+        sets: ex.sets,
+        reps: ex.reps,
+      }))
+    );
+    resetExerciseForm();
   }
 
   function resetExerciseForm() {
