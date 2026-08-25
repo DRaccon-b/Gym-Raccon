@@ -26,7 +26,12 @@ export default function GradientButton({
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.85}
-      style={[styles.wrapper, disabled && styles.disabled, style]}
+      style={[
+        styles.wrapper,
+        variant !== 'success' && { shadowColor: accent.color },
+        disabled && styles.disabled,
+        style,
+      ]}
     >
       <LinearGradient
         colors={colorsSet}
