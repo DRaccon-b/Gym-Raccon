@@ -43,14 +43,15 @@ function buildMonthGrid(year: number, month: number): DayCell[][] {
 }
 
 export default function StreakScreen() {
-  const { sessions } = useAppData();
+  const { sessions, restDays, toggleRestDay } = useAppData();
   const { accent } = useSettings();
   const { width } = useWindowDimensions();
   const today = useMemo(() => new Date(), []);
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
 
   const trainedDates = useMemo(() => getTrainedDateKeys(sessions), [sessions]);
-  const currentStreak = useMemo(() => getCurrentStreak(sessions), [sessions]);
+  const restDaySet = useMemo(() => new Set(restDays), [restDays]);
+  const currentStreak = useMemo(() => getCurrentStreak(sessions, restDays), [sessions, restDays]);
 
   const weeks = useMemo(
     () => buildMonthGrid(viewDate.getFullYear(), viewDate.getMonth()),
@@ -67,6 +68,12 @@ export default function StreakScreen() {
 
   const todayKey = dateKey(today);
   const cellSize = (width - 32 - 6 * 8) / 7;
+  const todayTrained = trainedDates.has(todayKey);
+  const todayIsRest = restDaySet.has(todayKey);
+
+  function handleToggleTodayRest() {
+    toggleRestDay(todayKey);
+  }
 
   function goToPrevMonth() {
     setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
@@ -88,6 +95,29 @@ export default function StreakScreen() {
           <Text style={styles.statLabel}>Diesen Monat</Text>
         </Card>
       </View>
+
+      <TouchableOpacity
+        style={[
+          styles.restDayButton,
+          todayIsRest && styles.restDayButtonActive,
+          todayTrained && styles.restDayButtonDisabled,
+        ]}
+        onPress={handleToggleTodayRest}
+        disabled={todayTrained}
+      >
+        <Text
+          style={[
+            styles.restDayButtonText,
+            todayIsRest && styles.restDayButtonTextActive,
+          ]}
+        >
+          {todayTrained
+            ? 'Heute schon trainiert'
+            : todayIsRest
+              ? '✓ Heute ist Ruhetag'
+              : '😴 Heute als Ruhetag markieren'}
+        </Text>
+      </TouchableOpacity>
 
       <View style={styles.monthHeader}>
         <TouchableOpacity onPress={goToPrevMonth} style={styles.monthNavButton}>
@@ -116,6 +146,7 @@ export default function StreakScreen() {
               return <View key={cell.key} style={{ width: cellSize, height: cellSize }} />;
             }
             const trained = trainedDates.has(cell.key);
+            const isRest = !trained && restDaySet.has(cell.key);
             const isToday = cell.key === todayKey;
             return (
               <View
@@ -124,10 +155,17 @@ export default function StreakScreen() {
                   styles.dayCell,
                   { width: cellSize, height: cellSize },
                   trained && { backgroundColor: accent.color, borderColor: accent.color },
+                  isRest && styles.dayCellRest,
                   isToday && styles.dayCellToday,
                 ]}
               >
-                <Text style={[styles.dayNumber, trained && styles.dayNumberTrained]}>
+                <Text
+                  style={[
+                    styles.dayNumber,
+                    trained && styles.dayNumberTrained,
+                    isRest && styles.dayNumberRest,
+                  ]}
+                >
                   {cell.date.getDate()}
                 </Text>
               </View>
@@ -175,6 +213,24 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   dayCellToday: { borderWidth: 2, borderColor: colors.textPrimary },
+  dayCellRest: { backgroundColor: 'rgba(96, 165, 250, 0.18)', borderColor: '#60a5fa' },
   dayNumber: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
   dayNumberTrained: { color: colors.textPrimary },
+  dayNumberRest: { color: '#60a5fa' },
+  restDayButton: {
+    marginBottom: spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  restDayButtonActive: {
+    backgroundColor: 'rgba(96, 165, 250, 0.15)',
+    borderColor: '#60a5fa',
+  },
+  restDayButtonDisabled: { opacity: 0.5 },
+  restDayButtonText: { color: colors.textSecondary, fontSize: 14, fontWeight: '600' },
+  restDayButtonTextActive: { color: '#60a5fa' },
 });

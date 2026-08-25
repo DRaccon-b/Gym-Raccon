@@ -1,16 +1,25 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { WorkoutPlan, WorkoutSession } from '../types';
-import { loadPlans, savePlans, loadSessions, saveSessions } from '../storage/storage';
+import {
+  loadPlans,
+  savePlans,
+  loadSessions,
+  saveSessions,
+  loadRestDays,
+  saveRestDays,
+} from '../storage/storage';
 
 type AppDataContextValue = {
   plans: WorkoutPlan[];
   sessions: WorkoutSession[];
+  restDays: string[];
   loading: boolean;
   addPlan: (plan: WorkoutPlan) => Promise<void>;
   updatePlan: (plan: WorkoutPlan) => Promise<void>;
   deletePlan: (planId: string) => Promise<void>;
   addSession: (session: WorkoutSession) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
+  toggleRestDay: (dateKey: string) => Promise<void>;
   clearAllData: () => Promise<void>;
 };
 
@@ -19,13 +28,19 @@ const AppDataContext = createContext<AppDataContextValue | undefined>(undefined)
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
+  const [restDays, setRestDays] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const [loadedPlans, loadedSessions] = await Promise.all([loadPlans(), loadSessions()]);
+      const [loadedPlans, loadedSessions, loadedRestDays] = await Promise.all([
+        loadPlans(),
+        loadSessions(),
+        loadRestDays(),
+      ]);
       setPlans(loadedPlans);
       setSessions(loadedSessions);
+      setRestDays(loadedRestDays);
       setLoading(false);
     })();
   }, []);
@@ -70,10 +85,21 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const toggleRestDay = useCallback(async (dateKey: string) => {
+    setRestDays((prev) => {
+      const next = prev.includes(dateKey)
+        ? prev.filter((d) => d !== dateKey)
+        : [...prev, dateKey];
+      saveRestDays(next);
+      return next;
+    });
+  }, []);
+
   const clearAllData = useCallback(async () => {
     setPlans([]);
     setSessions([]);
-    await Promise.all([savePlans([]), saveSessions([])]);
+    setRestDays([]);
+    await Promise.all([savePlans([]), saveSessions([]), saveRestDays([])]);
   }, []);
 
   return (
@@ -81,12 +107,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       value={{
         plans,
         sessions,
+        restDays,
         loading,
         addPlan,
         updatePlan,
         deletePlan,
         addSession,
         deleteSession,
+        toggleRestDay,
         clearAllData,
       }}
     >

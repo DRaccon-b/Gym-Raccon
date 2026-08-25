@@ -58,15 +58,16 @@ export function getTrainedDateKeys(sessions: WorkoutSession[]): Set<string> {
   return new Set(sessions.map((s) => dateKey(new Date(s.date))));
 }
 
-export function getCurrentStreak(sessions: WorkoutSession[]): number {
+export function getCurrentStreak(sessions: WorkoutSession[], restDays: string[] = []): number {
   const trained = getTrainedDateKeys(sessions);
+  const rest = new Set(restDays);
   const cursor = new Date();
-  if (!trained.has(dateKey(cursor))) {
+  if (!trained.has(dateKey(cursor)) && !rest.has(dateKey(cursor))) {
     cursor.setDate(cursor.getDate() - 1);
   }
   let streak = 0;
-  while (trained.has(dateKey(cursor))) {
-    streak += 1;
+  while (trained.has(dateKey(cursor)) || rest.has(dateKey(cursor))) {
+    if (trained.has(dateKey(cursor))) streak += 1;
     cursor.setDate(cursor.getDate() - 1);
   }
   return streak;

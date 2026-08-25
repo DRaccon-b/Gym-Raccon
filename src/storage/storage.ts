@@ -3,6 +3,7 @@ import { WorkoutPlan, WorkoutSession } from '../types';
 
 const PLANS_KEY = '@gym_raccon/plans';
 const SESSIONS_KEY = '@gym_raccon/sessions';
+const REST_DAYS_KEY = '@gym_raccon/rest_days';
 
 async function readJson<T>(key: string, fallback: T): Promise<T> {
   const raw = await AsyncStorage.getItem(key);
@@ -32,4 +33,12 @@ export async function loadSessions(): Promise<WorkoutSession[]> {
 
 export async function saveSessions(sessions: WorkoutSession[]): Promise<void> {
   await writeJson(SESSIONS_KEY, sessions);
+}
+
+export async function loadRestDays(): Promise<string[]> {
+  return readJson<string[]>(REST_DAYS_KEY, []);
+}
+
+export async function saveRestDays(restDays: string[]): Promise<void> {
+  await writeJson(REST_DAYS_KEY, restDays);
 }
