@@ -16,6 +16,7 @@ import ExercisePhotoPicker from '../components/ExercisePhotoPicker';
 import GradientButton from '../components/GradientButton';
 import { colors, radius, spacing } from '../theme';
 import { useSettings } from '../context/SettingsContext';
+import { PLAN_TEMPLATES } from '../data/planTemplates';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePlan'>;
 
@@ -36,6 +37,37 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
   const [sets, setSets] = useState('3');
   const [reps, setReps] = useState('10');
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
+
+  function applyTemplate(templateKey: string) {
+    const template = PLAN_TEMPLATES.find((t) => t.key === templateKey);
+    if (!template) return;
+
+    function apply() {
+      setPlanName(template!.label);
+      setExercises(
+        template!.exercises.map((ex) => ({
+          id: makeId(),
+          name: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+        }))
+      );
+      resetExerciseForm();
+    }
+
+    if (exercises.length > 0 || planName.trim()) {
+      Alert.alert(
+        'Vorlage übernehmen?',
+        'Das ersetzt den Namen und die aktuellen Übungen mit der Vorlage.',
+        [
+          { text: 'Abbrechen', style: 'cancel' },
+          { text: 'Übernehmen', onPress: apply },
+        ]
+      );
+    } else {
+      apply();
+    }
+  }
 
   function resetExerciseForm() {
     setEditingExerciseId(undefined);
@@ -102,6 +134,24 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {!existingPlan && (
+        <>
+          <Text style={styles.sectionTitleFirst}>Vorlage verwenden (optional)</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.templateRow}>
+            {PLAN_TEMPLATES.map((template) => (
+              <TouchableOpacity
+                key={template.key}
+                style={styles.templateChip}
+                onPress={() => applyTemplate(template.key)}
+              >
+                <Text style={styles.templateEmoji}>{template.emoji}</Text>
+                <Text style={styles.templateLabel}>{template.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </>
+      )}
+
       <Text style={styles.label}>Plan-Name</Text>
       <TextInput
         style={styles.input}
@@ -208,6 +258,21 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   sectionTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 24, marginBottom: 8 },
+  sectionTitleFirst: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 10 },
+  templateRow: { flexGrow: 0, marginBottom: 8 },
+  templateChip: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginRight: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+    minWidth: 88,
+  },
+  templateEmoji: { fontSize: 22, marginBottom: 4 },
+  templateLabel: { color: colors.textPrimary, fontSize: 13, fontWeight: '600' },
   exerciseRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
