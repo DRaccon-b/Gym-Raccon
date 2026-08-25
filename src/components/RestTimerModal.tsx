@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Vibration, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { colors, radius, shadow } from '../theme';
+import { radius, Colors } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 const notificationsSupported = Platform.OS !== 'web';
 
@@ -23,6 +24,8 @@ type Props = {
 };
 
 export default function RestTimerModal({ visible, totalSeconds, onClose }: Props) {
+  const { colors, shadow } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, shadow.card), [colors, shadow]);
   const [remaining, setRemaining] = useState(totalSeconds);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const notificationIdRef = useRef<string | null>(null);
@@ -113,47 +116,49 @@ export default function RestTimerModal({ visible, totalSeconds, onClose }: Props
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.75)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.xl,
-    paddingVertical: 32,
-    paddingHorizontal: 40,
-    alignItems: 'center',
-    width: '80%',
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...shadow.card,
-  },
-  label: { color: colors.textSecondary, fontSize: 16, marginBottom: 12, fontWeight: '600' },
-  timer: {
-    color: colors.textPrimary,
-    fontSize: 56,
-    fontWeight: '800',
-    fontVariant: ['tabular-nums'],
-  },
-  timerDone: { color: colors.success },
-  hint: {
-    color: colors.textMuted,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 12,
-  },
-  button: {
-    marginTop: 28,
-    backgroundColor: colors.surfaceRaised,
-    borderRadius: radius.md,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  buttonDone: { backgroundColor: colors.success, borderColor: colors.success },
-  buttonText: { color: colors.textPrimary, fontSize: 15, fontWeight: '700' },
-});
+function makeStyles(colors: Colors, cardShadow: object) {
+  return StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.xl,
+      paddingVertical: 32,
+      paddingHorizontal: 40,
+      alignItems: 'center',
+      width: '80%',
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...cardShadow,
+    },
+    label: { color: colors.textSecondary, fontSize: 16, marginBottom: 12, fontWeight: '600' },
+    timer: {
+      color: colors.textPrimary,
+      fontSize: 56,
+      fontWeight: '800',
+      fontVariant: ['tabular-nums'],
+    },
+    timerDone: { color: colors.success },
+    hint: {
+      color: colors.textMuted,
+      fontSize: 12,
+      textAlign: 'center',
+      marginTop: 12,
+    },
+    button: {
+      marginTop: 28,
+      backgroundColor: colors.surfaceRaised,
+      borderRadius: radius.md,
+      paddingVertical: 14,
+      paddingHorizontal: 28,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    buttonDone: { backgroundColor: colors.success, borderColor: colors.success },
+    buttonText: { color: colors.textPrimary, fontSize: 15, fontWeight: '700' },
+  });
+}

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
-import { colors, radius, spacing, typography } from '../theme';
+import { radius, spacing, Colors, Typography } from '../theme';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
 import { useSettings } from '../context/SettingsContext';
@@ -13,7 +13,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'PlanDetail'>;
 export default function PlanDetailScreen({ route, navigation }: Props) {
   const { planId } = route.params;
   const { plans } = useAppData();
-  const { accent } = useSettings();
+  const { accent, colors, typography } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, typography), [colors, typography]);
   const plan = plans.find((p) => p.id === planId);
 
   if (!plan) {
@@ -68,7 +69,8 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: Colors, typography: Typography) {
+  return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   list: { padding: spacing.md, paddingBottom: 110 },
   header: {
@@ -103,4 +105,5 @@ const styles = StyleSheet.create({
     left: spacing.md,
     right: spacing.md,
   },
-});
+  });
+}

@@ -19,7 +19,7 @@ import NextExercisePicker from '../components/NextExercisePicker';
 import NumberStepperInput from '../components/NumberStepperInput';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
-import { colors, radius, spacing } from '../theme';
+import { radius, spacing, Colors } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ActiveWorkout'>;
 
@@ -32,7 +32,8 @@ function makeId(): string {
 export default function ActiveWorkoutScreen({ route, navigation }: Props) {
   const { planId, startExerciseId, energyLevel } = route.params;
   const { plans, sessions, addSession } = useAppData();
-  const { restSeconds, accent } = useSettings();
+  const { restSeconds, accent, colors } = useSettings();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const plan = plans.find((p) => p.id === planId);
   const startedAt = useMemo(() => Date.now(), []);
 
@@ -272,7 +273,8 @@ export default function ActiveWorkoutScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: Colors) {
+  return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   list: { padding: spacing.md, paddingBottom: 110 },
   progress: { color: colors.textSecondary, fontSize: 13, marginBottom: 12, textAlign: 'center', fontWeight: '600' },
@@ -333,4 +335,5 @@ const styles = StyleSheet.create({
     left: spacing.md,
     right: spacing.md,
   },
-});
+  });
+}

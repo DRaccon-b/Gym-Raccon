@@ -10,7 +10,7 @@ import {
 } from '../utils/workoutHistory';
 import LineChart from '../components/LineChart';
 import Card from '../components/Card';
-import { colors, radius, spacing, typography } from '../theme';
+import { radius, spacing, Colors, Typography } from '../theme';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -30,7 +30,8 @@ const VOLUME_PERIODS: { value: VolumePeriod; label: string }[] = [
 
 export default function ProgressScreen() {
   const { sessions } = useAppData();
-  const { showVolume, accent } = useSettings();
+  const { showVolume, accent, colors, typography } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, typography), [colors, typography]);
   const { width } = useWindowDimensions();
   const exerciseNames = useMemo(() => getLoggedExerciseNames(sessions), [sessions]);
   const [selected, setSelected] = useState<string | undefined>(exerciseNames[0]);
@@ -124,6 +125,7 @@ export default function ProgressScreen() {
                   { values: progress.map((p) => p.topSetReps), color: colors.success },
                 ]}
                 width={width - 64}
+                axisColor={colors.border}
               />
               <View style={styles.legendRow}>
                 <View style={styles.legendItem}>
@@ -187,7 +189,8 @@ export default function ProgressScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: Colors, typography: Typography) {
+  return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   volumeCompact: {
     marginTop: 4,
@@ -250,4 +253,5 @@ const styles = StyleSheet.create({
   empty: { marginTop: 80, alignItems: 'center', paddingHorizontal: 32 },
   emptyText: { ...typography.title, textAlign: 'center' },
   emptySubtext: { ...typography.body, marginTop: 8, textAlign: 'center' },
-});
+  });
+}

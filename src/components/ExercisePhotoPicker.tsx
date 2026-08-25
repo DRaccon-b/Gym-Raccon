@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Modal, StyleSheet, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { colors, radius, shadow } from '../theme';
+import { radius, Colors } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = {
   photoUri?: string;
@@ -13,6 +14,8 @@ const cameraSupported = Platform.OS !== 'web';
 
 export default function ExercisePhotoPicker({ photoUri, onChange, size = 56 }: Props) {
   const [menuVisible, setMenuVisible] = useState(false);
+  const { colors, shadow } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, shadow.card), [colors, shadow]);
 
   async function pickFromLibrary() {
     setMenuVisible(false);
@@ -101,30 +104,32 @@ export default function ExercisePhotoPicker({ photoUri, onChange, size = 56 }: P
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-    backgroundColor: colors.surfaceSunken,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  image: { width: '100%', height: '100%' },
-  placeholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-    padding: 20,
-    paddingBottom: 32,
-    borderTopWidth: 1,
-    borderColor: colors.border,
-    ...shadow.card,
-  },
-  sheetTitle: { color: colors.textMuted, fontSize: 13, fontWeight: '700', marginBottom: 12 },
-  option: { paddingVertical: 14, borderTopWidth: 1, borderTopColor: colors.border },
-  optionText: { color: colors.textPrimary, fontSize: 16, textAlign: 'center' },
-  optionTextDanger: { color: colors.danger, fontSize: 16, textAlign: 'center' },
-  cancelOption: { paddingVertical: 14, marginTop: 8 },
-  cancelText: { color: colors.textSecondary, fontSize: 16, textAlign: 'center', fontWeight: '600' },
-});
+function makeStyles(colors: Colors, cardShadow: object) {
+  return StyleSheet.create({
+    container: {
+      overflow: 'hidden',
+      backgroundColor: colors.surfaceSunken,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    image: { width: '100%', height: '100%' },
+    placeholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+    sheet: {
+      backgroundColor: colors.surface,
+      borderTopLeftRadius: radius.xl,
+      borderTopRightRadius: radius.xl,
+      padding: 20,
+      paddingBottom: 32,
+      borderTopWidth: 1,
+      borderColor: colors.border,
+      ...cardShadow,
+    },
+    sheetTitle: { color: colors.textMuted, fontSize: 13, fontWeight: '700', marginBottom: 12 },
+    option: { paddingVertical: 14, borderTopWidth: 1, borderTopColor: colors.border },
+    optionText: { color: colors.textPrimary, fontSize: 16, textAlign: 'center' },
+    optionTextDanger: { color: colors.danger, fontSize: 16, textAlign: 'center' },
+    cancelOption: { paddingVertical: 14, marginTop: 8 },
+    cancelText: { color: colors.textSecondary, fontSize: 16, textAlign: 'center', fontWeight: '600' },
+  });
+}

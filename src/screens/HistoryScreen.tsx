@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAppData } from '../context/AppDataContext';
-import { colors, spacing, typography } from '../theme';
+import { spacing, Colors, Typography } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 import Card from '../components/Card';
 
 function formatDate(iso: string): string {
@@ -13,6 +14,8 @@ function formatDate(iso: string): string {
 
 export default function HistoryScreen() {
   const { sessions, deleteSession } = useAppData();
+  const { colors, typography } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, typography), [colors, typography]);
 
   return (
     <View style={styles.container}>
@@ -45,13 +48,15 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  list: { padding: spacing.md },
-  cardSpacing: { marginBottom: spacing.sm },
-  cardTitle: { ...typography.title, fontSize: 17 },
-  cardSubtitle: { ...typography.body, marginTop: 4 },
-  cardMeta: { color: colors.textMuted, fontSize: 13, marginTop: 6 },
-  empty: { marginTop: 80, alignItems: 'center' },
-  emptyText: { color: colors.textSecondary, fontSize: 15 },
-});
+function makeStyles(colors: Colors, typography: Typography) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    list: { padding: spacing.md },
+    cardSpacing: { marginBottom: spacing.sm },
+    cardTitle: { ...typography.title, fontSize: 17 },
+    cardSubtitle: { ...typography.body, marginTop: 4 },
+    cardMeta: { color: colors.textMuted, fontSize: 13, marginTop: 6 },
+    empty: { marginTop: 80, alignItems: 'center' },
+    emptyText: { color: colors.textSecondary, fontSize: 15 },
+  });
+}

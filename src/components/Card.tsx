@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import { colors, radius, shadow, spacing } from '../theme';
+import { radius, spacing, Colors } from '../theme';
 import { useSettings } from '../context/SettingsContext';
 
 type Props = {
@@ -10,7 +10,8 @@ type Props = {
 };
 
 export default function Card({ children, style, highlighted }: Props) {
-  const { accent } = useSettings();
+  const { accent, colors, shadow } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, shadow.card), [colors, shadow]);
   return (
     <View
       style={[styles.card, highlighted && { borderColor: accent.color }, style]}
@@ -20,13 +21,15 @@ export default function Card({ children, style, highlighted }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...shadow.card,
-  },
-});
+function makeStyles(colors: Colors, cardShadow: object) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...cardShadow,
+    },
+  });
+}

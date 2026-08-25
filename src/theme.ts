@@ -1,4 +1,23 @@
-export const colors = {
+export type ColorScheme = 'light' | 'dark';
+
+export type Colors = {
+  background: string;
+  surface: string;
+  surfaceRaised: string;
+  surfaceSunken: string;
+  border: string;
+  borderStrong: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  accent: string;
+  accentDim: string;
+  accentGlow: string;
+  success: string;
+  danger: string;
+};
+
+export const DARK_COLORS: Colors = {
   background: '#0b0d12',
   surface: '#161922',
   surfaceRaised: '#1c202b',
@@ -15,13 +34,37 @@ export const colors = {
   danger: '#ef4444',
 };
 
+export const LIGHT_COLORS: Colors = {
+  background: '#f4f5f7',
+  surface: '#ffffff',
+  surfaceRaised: '#ffffff',
+  surfaceSunken: '#eceef2',
+  border: '#e1e4ea',
+  borderStrong: '#ff5a3c',
+  textPrimary: '#14161c',
+  textSecondary: '#5b6272',
+  textMuted: '#8a90a0',
+  accent: '#ff5a3c',
+  accentDim: '#c8452e',
+  accentGlow: 'rgba(255, 90, 60, 0.14)',
+  success: '#16a34a',
+  danger: '#dc2626',
+};
+
+export function getColors(scheme: ColorScheme): Colors {
+  return scheme === 'light' ? LIGHT_COLORS : DARK_COLORS;
+}
+
+/** @deprecated Use useTheme()/useSettings().colors instead — this is a static dark fallback. */
+export const colors = DARK_COLORS;
+
 export const gradients = {
   accent: ['#ff7a52', '#ff5a3c', '#e2431f'] as const,
   success: ['#34d976', '#22c55e', '#16a34a'] as const,
   surface: ['#1f2330', '#161922'] as const,
 };
 
-export type AccentKey = 'orange' | 'blue' | 'green' | 'yellow' | 'red';
+export type AccentKey = 'orange' | 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'pink' | 'teal';
 
 export type AccentTheme = {
   key: AccentKey;
@@ -79,6 +122,33 @@ export const ACCENT_THEMES: Record<AccentKey, AccentTheme> = {
     glow: 'rgba(239, 68, 68, 0.18)',
     gradient: ['#f87171', '#ef4444', '#b91c1c'],
   },
+  purple: {
+    key: 'purple',
+    label: 'Lila',
+    swatch: '#a78bfa',
+    color: '#a78bfa',
+    dim: '#8b5cf6',
+    glow: 'rgba(167, 139, 250, 0.18)',
+    gradient: ['#c4b5fd', '#a78bfa', '#7c3aed'],
+  },
+  pink: {
+    key: 'pink',
+    label: 'Pink',
+    swatch: '#ec4899',
+    color: '#ec4899',
+    dim: '#db2777',
+    glow: 'rgba(236, 72, 153, 0.18)',
+    gradient: ['#f472b6', '#ec4899', '#be185d'],
+  },
+  teal: {
+    key: 'teal',
+    label: 'Türkis',
+    swatch: '#14b8a6',
+    color: '#14b8a6',
+    dim: '#0d9488',
+    glow: 'rgba(20, 184, 166, 0.18)',
+    gradient: ['#2dd4bf', '#14b8a6', '#0f766e'],
+  },
 };
 
 export const DEFAULT_ACCENT_KEY: AccentKey = 'orange';
@@ -100,28 +170,47 @@ export const radius = {
   pill: 999,
 };
 
-export const typography = {
-  screenTitle: { fontSize: 28, fontWeight: '800' as const, letterSpacing: -0.5, color: colors.textPrimary },
-  title: { fontSize: 20, fontWeight: '700' as const, letterSpacing: -0.3, color: colors.textPrimary },
-  subtitle: { fontSize: 15, fontWeight: '600' as const, color: colors.textSecondary },
-  body: { fontSize: 14, fontWeight: '400' as const, color: colors.textSecondary },
-  label: { fontSize: 12, fontWeight: '700' as const, color: colors.textMuted, letterSpacing: 0.6 },
-  button: { fontSize: 16, fontWeight: '800' as const, letterSpacing: 0.2 },
+export type Typography = {
+  screenTitle: { fontSize: number; fontWeight: '800'; letterSpacing: number; color: string };
+  title: { fontSize: number; fontWeight: '700'; letterSpacing: number; color: string };
+  subtitle: { fontSize: number; fontWeight: '600'; color: string };
+  body: { fontSize: number; fontWeight: '400'; color: string };
+  label: { fontSize: number; fontWeight: '700'; color: string; letterSpacing: number };
+  button: { fontSize: number; fontWeight: '800'; letterSpacing: number };
 };
 
-export const shadow = {
-  card: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  glow: {
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 8,
-  },
-};
+export function getTypography(c: Colors): Typography {
+  return {
+    screenTitle: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5, color: c.textPrimary },
+    title: { fontSize: 20, fontWeight: '700', letterSpacing: -0.3, color: c.textPrimary },
+    subtitle: { fontSize: 15, fontWeight: '600', color: c.textSecondary },
+    body: { fontSize: 14, fontWeight: '400', color: c.textSecondary },
+    label: { fontSize: 12, fontWeight: '700', color: c.textMuted, letterSpacing: 0.6 },
+    button: { fontSize: 16, fontWeight: '800', letterSpacing: 0.2 },
+  };
+}
+
+/** @deprecated Use useTheme()/useSettings().typography instead — this is a static dark fallback. */
+export const typography = getTypography(DARK_COLORS);
+
+export function getShadow(c: Colors) {
+  return {
+    card: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.35,
+      shadowRadius: 12,
+      elevation: 6,
+    },
+    glow: {
+      shadowColor: c.accent,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.45,
+      shadowRadius: 14,
+      elevation: 8,
+    },
+  };
+}
+
+/** @deprecated Use useTheme()/useSettings().shadow instead — this is a static dark fallback. */
+export const shadow = getShadow(DARK_COLORS);

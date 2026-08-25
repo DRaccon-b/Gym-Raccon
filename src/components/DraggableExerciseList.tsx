@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, PanResponder, Platform } from 'react-native';
 import { Exercise } from '../types';
-import { colors, radius } from '../theme';
+import { radius, Colors } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 import ExercisePhotoPicker from './ExercisePhotoPicker';
 
 const ROW_HEIGHT = 72;
@@ -27,6 +28,8 @@ export default function DraggableExerciseList({
   onRemove,
   onPhotoChange,
 }: Props) {
+  const { colors } = useSettings();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const [order, setOrder] = useState(exercises);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const dragIndexRef = useRef(0);
@@ -138,22 +141,24 @@ export default function DraggableExerciseList({
 const webDragHandleStyle =
   Platform.OS === 'web' ? ({ touchAction: 'none', userSelect: 'none', cursor: 'grab' } as any) : {};
 
-const styles = StyleSheet.create({
-  row: {
-    height: ROW_HEIGHT,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: radius.sm,
-    paddingHorizontal: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    gap: 8,
-  },
-  dragHandle: { paddingHorizontal: 4, paddingVertical: 12 },
-  dragHandleText: { color: colors.textMuted, fontSize: 20, fontWeight: '700' },
-  info: { flex: 1 },
-  exerciseText: { color: colors.textPrimary, fontSize: 15 },
-  editHint: { color: colors.textMuted, fontSize: 11, marginTop: 2 },
-  removeText: { fontSize: 13, fontWeight: '600' },
-});
+function makeStyles(colors: Colors) {
+  return StyleSheet.create({
+    row: {
+      height: ROW_HEIGHT,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderRadius: radius.sm,
+      paddingHorizontal: 10,
+      borderWidth: 2,
+      borderColor: 'transparent',
+      gap: 8,
+    },
+    dragHandle: { paddingHorizontal: 4, paddingVertical: 12 },
+    dragHandleText: { color: colors.textMuted, fontSize: 20, fontWeight: '700' },
+    info: { flex: 1 },
+    exerciseText: { color: colors.textPrimary, fontSize: 15 },
+    editHint: { color: colors.textMuted, fontSize: 11, marginTop: 2 },
+    removeText: { fontSize: 13, fontWeight: '600' },
+  });
+}

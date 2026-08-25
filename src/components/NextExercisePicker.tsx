@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Modal, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Exercise } from '../types';
-import { colors, radius, shadow } from '../theme';
+import { radius, Colors } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = {
   visible: boolean;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function NextExercisePicker({ visible, exercises, onSelect, onClose }: Props) {
+  const { colors, shadow } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, shadow.card), [colors, shadow]);
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -39,37 +42,39 @@ export default function NextExercisePicker({ visible, exercises, onSelect, onClo
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  sheet: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-    padding: 20,
-    paddingBottom: 32,
-    borderTopWidth: 1,
-    borderColor: colors.border,
-    ...shadow.card,
-  },
-  title: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 16 },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: colors.surfaceSunken,
-    borderRadius: radius.md,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  thumb: { width: 36, height: 36, borderRadius: radius.sm },
-  thumbPlaceholder: {
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemText: { color: colors.textPrimary, fontSize: 15 },
-  cancelButton: { marginTop: 12, alignItems: 'center', paddingVertical: 12 },
-  cancelText: { color: colors.textSecondary, fontSize: 15 },
-});
+function makeStyles(colors: Colors, cardShadow: object) {
+  return StyleSheet.create({
+    overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+    sheet: {
+      backgroundColor: colors.surface,
+      borderTopLeftRadius: radius.xl,
+      borderTopRightRadius: radius.xl,
+      padding: 20,
+      paddingBottom: 32,
+      borderTopWidth: 1,
+      borderColor: colors.border,
+      ...cardShadow,
+    },
+    title: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 16 },
+    item: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      backgroundColor: colors.surfaceSunken,
+      borderRadius: radius.md,
+      padding: 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    thumb: { width: 36, height: 36, borderRadius: radius.sm },
+    thumbPlaceholder: {
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    itemText: { color: colors.textPrimary, fontSize: 15 },
+    cancelButton: { marginTop: 12, alignItems: 'center', paddingVertical: 12 },
+    cancelText: { color: colors.textSecondary, fontSize: 15 },
+  });
+}

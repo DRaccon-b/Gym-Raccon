@@ -1,24 +1,35 @@
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './src/navigation/RootNavigator';
 import { AppDataProvider } from './src/context/AppDataContext';
-import { SettingsProvider } from './src/context/SettingsContext';
+import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 
-const theme = {
-  ...DarkTheme,
-  colors: { ...DarkTheme.colors, background: '#0f1115', card: '#0f1115' },
-};
+function AppContent() {
+  const { colorScheme, colors } = useSettings();
+  const isDark = colorScheme === 'dark';
+  const baseTheme = isDark ? DarkTheme : DefaultTheme;
+  const theme = {
+    ...baseTheme,
+    colors: { ...baseTheme.colors, background: colors.background, card: colors.background },
+  };
+
+  return (
+    <>
+      <NavigationContainer theme={theme}>
+        <RootNavigator />
+      </NavigationContainer>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+    </>
+  );
+}
 
 export default function App() {
   return (
     <SafeAreaProvider>
       <AppDataProvider>
         <SettingsProvider>
-          <NavigationContainer theme={theme}>
-            <RootNavigator />
-          </NavigationContainer>
-          <StatusBar style="light" />
+          <AppContent />
         </SettingsProvider>
       </AppDataProvider>
     </SafeAreaProvider>

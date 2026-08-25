@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'r
 import { useAppData } from '../context/AppDataContext';
 import { dateKey, getCurrentStreak, getTrainedDateKeys } from '../utils/workoutHistory';
 import Card from '../components/Card';
-import { colors, radius, spacing, typography } from '../theme';
+import { radius, spacing, Colors, Typography } from '../theme';
 import { useSettings } from '../context/SettingsContext';
 
 const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -44,7 +44,8 @@ function buildMonthGrid(year: number, month: number): DayCell[][] {
 
 export default function StreakScreen() {
   const { sessions, restDays, toggleRestDay } = useAppData();
-  const { accent } = useSettings();
+  const { accent, colors, typography } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, typography), [colors, typography]);
   const { width } = useWindowDimensions();
   const today = useMemo(() => new Date(), []);
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -177,60 +178,62 @@ export default function StreakScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, padding: spacing.md },
-  statsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
-  statCard: { flex: 1, alignItems: 'center' },
-  statValue: { color: colors.textPrimary, fontSize: 22, fontWeight: '800' },
-  statLabel: { ...typography.label, marginTop: 4 },
-  monthHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  monthNavButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  monthNavText: { color: colors.textPrimary, fontSize: 20, fontWeight: '700' },
-  monthTitle: { ...typography.title, fontSize: 17 },
-  weekdayRow: { flexDirection: 'row', gap: 8, marginBottom: 6 },
-  weekdayLabel: { color: colors.textMuted, fontSize: 12, textAlign: 'center' },
-  weekRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
-  dayCell: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  dayCellToday: { borderWidth: 2, borderColor: colors.textPrimary },
-  dayCellRest: { backgroundColor: 'rgba(167, 139, 250, 0.18)', borderColor: '#a78bfa' },
-  dayNumber: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
-  dayNumberTrained: { color: colors.textPrimary },
-  dayNumberRest: { color: '#a78bfa' },
-  restDayButton: {
-    marginBottom: spacing.lg,
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  restDayButtonActive: {
-    backgroundColor: 'rgba(167, 139, 250, 0.15)',
-    borderColor: '#a78bfa',
-  },
-  restDayButtonDisabled: { opacity: 0.5 },
-  restDayButtonText: { color: colors.textSecondary, fontSize: 14, fontWeight: '600' },
-  restDayButtonTextActive: { color: '#a78bfa' },
-});
+function makeStyles(colors: Colors, typography: Typography) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background, padding: spacing.md },
+    statsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg },
+    statCard: { flex: 1, alignItems: 'center' },
+    statValue: { color: colors.textPrimary, fontSize: 22, fontWeight: '800' },
+    statLabel: { ...typography.label, marginTop: 4 },
+    monthHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    monthNavButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    monthNavText: { color: colors.textPrimary, fontSize: 20, fontWeight: '700' },
+    monthTitle: { ...typography.title, fontSize: 17 },
+    weekdayRow: { flexDirection: 'row', gap: 8, marginBottom: 6 },
+    weekdayLabel: { color: colors.textMuted, fontSize: 12, textAlign: 'center' },
+    weekRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+    dayCell: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.sm,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    dayCellToday: { borderWidth: 2, borderColor: colors.textPrimary },
+    dayCellRest: { backgroundColor: 'rgba(167, 139, 250, 0.18)', borderColor: '#a78bfa' },
+    dayNumber: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
+    dayNumberTrained: { color: colors.textPrimary },
+    dayNumberRest: { color: '#a78bfa' },
+    restDayButton: {
+      marginBottom: spacing.lg,
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      paddingVertical: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    restDayButtonActive: {
+      backgroundColor: 'rgba(167, 139, 250, 0.15)',
+      borderColor: '#a78bfa',
+    },
+    restDayButtonDisabled: { opacity: 0.5 },
+    restDayButtonText: { color: colors.textSecondary, fontSize: 14, fontWeight: '600' },
+    restDayButtonTextActive: { color: '#a78bfa' },
+  });
+}

@@ -12,20 +12,20 @@ import ProgressScreen from '../screens/ProgressScreen';
 import StreakScreen from '../screens/StreakScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
-import { colors } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 import CustomTabBar from './CustomTabBar';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-const screenOptions = {
-  headerStyle: { backgroundColor: colors.background },
-  headerTintColor: colors.textPrimary,
-  headerTitleStyle: { fontWeight: '700' as const },
-  headerShadowVisible: false,
-};
-
 function PlansStack() {
+  const { colors } = useSettings();
+  const screenOptions = {
+    headerStyle: { backgroundColor: colors.background },
+    headerTintColor: colors.textPrimary,
+    headerTitleStyle: { fontWeight: '700' as const },
+    headerShadowVisible: false,
+  };
   return (
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen name="Plans" component={PlansScreen} options={{ headerShown: false }} />
@@ -52,6 +52,11 @@ function PlansStack() {
 }
 
 export default function RootNavigator() {
+  const { colors } = useSettings();
+  const headerStyle = { backgroundColor: colors.background };
+  const headerTintColor = colors.textPrimary;
+  const headerTitleStyle = { fontWeight: '700' as const };
+
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -73,9 +78,9 @@ export default function RootNavigator() {
         options={{
           title: 'Verlauf',
           headerShown: true,
-          headerStyle: screenOptions.headerStyle,
-          headerTintColor: screenOptions.headerTintColor,
-          headerTitleStyle: screenOptions.headerTitleStyle,
+          headerStyle,
+          headerTintColor,
+          headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>📊</Text>,
         }}
       />
@@ -85,9 +90,9 @@ export default function RootNavigator() {
         options={{
           title: 'Fortschritt',
           headerShown: true,
-          headerStyle: screenOptions.headerStyle,
-          headerTintColor: screenOptions.headerTintColor,
-          headerTitleStyle: screenOptions.headerTitleStyle,
+          headerStyle,
+          headerTintColor,
+          headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>📈</Text>,
         }}
       />
@@ -97,9 +102,9 @@ export default function RootNavigator() {
         options={{
           title: 'Streak',
           headerShown: true,
-          headerStyle: screenOptions.headerStyle,
-          headerTintColor: screenOptions.headerTintColor,
-          headerTitleStyle: screenOptions.headerTitleStyle,
+          headerStyle,
+          headerTintColor,
+          headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>🔥</Text>,
         }}
       />
@@ -109,9 +114,9 @@ export default function RootNavigator() {
         options={{
           title: 'Einstellungen',
           headerShown: true,
-          headerStyle: screenOptions.headerStyle,
-          headerTintColor: screenOptions.headerTintColor,
-          headerTitleStyle: screenOptions.headerTitleStyle,
+          headerStyle,
+          headerTintColor,
+          headerTitleStyle,
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>⚙️</Text>,
         }}
       />

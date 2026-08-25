@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors, radius } from '../theme';
+import { radius, Colors } from '../theme';
 import { useSettings } from '../context/SettingsContext';
 
 type Props = {
@@ -24,7 +24,8 @@ export default function NumberStepperInput({
   suffix,
   decimals = 0,
 }: Props) {
-  const { accent } = useSettings();
+  const { accent, colors } = useSettings();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   function clamp(next: number): number {
     return Math.round(Math.max(min, next) * 100) / 100;
@@ -67,47 +68,49 @@ export default function NumberStepperInput({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    flexShrink: 0,
-    flexGrow: 0,
-    backgroundColor: colors.surfaceSunken,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-  },
-  stepButton: {
-    width: 34,
-    height: 34,
-    flexShrink: 0,
-    flexGrow: 0,
-    borderRadius: radius.sm,
-    backgroundColor: colors.surfaceRaised,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepButtonText: { fontSize: 20, fontWeight: '700', lineHeight: 22 },
-  valueBox: {
-    width: 64,
-    flexShrink: 0,
-    flexGrow: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  valueInput: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '700',
-    textAlign: 'center',
-    width: 44,
-    flexShrink: 0,
-    flexGrow: 0,
-    paddingVertical: 0,
-  },
-  suffix: { color: colors.textMuted, fontSize: 11, fontWeight: '600', marginTop: -2 },
-});
+function makeStyles(colors: Colors) {
+  return StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      flexShrink: 0,
+      flexGrow: 0,
+      backgroundColor: colors.surfaceSunken,
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: 4,
+      paddingVertical: 4,
+    },
+    stepButton: {
+      width: 34,
+      height: 34,
+      flexShrink: 0,
+      flexGrow: 0,
+      borderRadius: radius.sm,
+      backgroundColor: colors.surfaceRaised,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    stepButtonText: { fontSize: 20, fontWeight: '700', lineHeight: 22 },
+    valueBox: {
+      width: 64,
+      flexShrink: 0,
+      flexGrow: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    valueInput: {
+      color: colors.textPrimary,
+      fontSize: 18,
+      fontWeight: '700',
+      textAlign: 'center',
+      width: 44,
+      flexShrink: 0,
+      flexGrow: 0,
+      paddingVertical: 0,
+    },
+    suffix: { color: colors.textMuted, fontSize: 11, fontWeight: '600', marginTop: -2 },
+  });
+}

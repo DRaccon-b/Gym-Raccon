@@ -3,6 +3,19 @@ import { AccentKey, DEFAULT_ACCENT_KEY, ACCENT_THEMES } from '../theme';
 
 const ACCENT_KEY_STORAGE_KEY = '@gym_raccon/accent_color';
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+const THEME_MODE_KEY = '@gym_raccon/theme_mode';
+const DEFAULT_THEME_MODE: ThemeMode = 'dark';
+
+export async function loadThemeMode(): Promise<ThemeMode> {
+  const raw = await AsyncStorage.getItem(THEME_MODE_KEY);
+  return raw === 'light' || raw === 'dark' || raw === 'system' ? raw : DEFAULT_THEME_MODE;
+}
+
+export async function saveThemeMode(mode: ThemeMode): Promise<void> {
+  await AsyncStorage.setItem(THEME_MODE_KEY, mode);
+}
+
 const REST_SECONDS_KEY = '@gym_raccon/rest_seconds';
 const DEFAULT_REST_SECONDS = 90;
 

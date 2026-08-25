@@ -11,6 +11,7 @@ type Props = {
   series: ChartSeries[];
   width: number;
   height?: number;
+  axisColor?: string;
 };
 
 function toPoints(values: number[], width: number, height: number, paddingX: number, paddingY: number) {
@@ -27,7 +28,7 @@ function toPoints(values: number[], width: number, height: number, paddingX: num
   });
 }
 
-export default function LineChart({ series, width, height = 200 }: Props) {
+export default function LineChart({ series, width, height = 200, axisColor = '#2a2f3a' }: Props) {
   const paddingX = 16;
   const paddingY = 16;
 
@@ -39,7 +40,7 @@ export default function LineChart({ series, width, height = 200 }: Props) {
           y1={height - paddingY}
           x2={width - paddingX}
           y2={height - paddingY}
-          stroke="#2a2f3a"
+          stroke={axisColor}
           strokeWidth={1}
         />
         {series.map((s, si) => {

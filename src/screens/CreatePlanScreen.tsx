@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import { Exercise, WorkoutPlan } from '../types';
 import ExercisePhotoPicker from '../components/ExercisePhotoPicker';
 import DraggableExerciseList from '../components/DraggableExerciseList';
 import GradientButton from '../components/GradientButton';
-import { colors, radius, spacing } from '../theme';
+import { radius, spacing, Colors } from '../theme';
 import { useSettings } from '../context/SettingsContext';
 import { PLAN_TEMPLATES } from '../data/planTemplates';
 
@@ -27,7 +27,8 @@ function makeId(): string {
 
 export default function CreatePlanScreen({ navigation, route }: Props) {
   const { plans, addPlan, updatePlan } = useAppData();
-  const { accent } = useSettings();
+  const { accent, colors } = useSettings();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const editingPlanId = route.params?.planId;
   const existingPlan = editingPlanId ? plans.find((p) => p.id === editingPlanId) : undefined;
 
@@ -215,7 +216,8 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: Colors) {
+  return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingBottom: 48 },
   label: { color: colors.textSecondary, fontSize: 13, marginBottom: 6, marginTop: 12 },
@@ -275,4 +277,5 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   addButtonText: { color: colors.textPrimary, fontWeight: '600' },
-});
+  });
+}

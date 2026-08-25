@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
 import { APP_VERSION } from '../constants/version';
-import { colors, radius, spacing, typography, shadow } from '../theme';
+import { radius, spacing, Colors, Typography } from '../theme';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
 import { useSettings } from '../context/SettingsContext';
@@ -14,7 +14,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Plans'>;
 
 export default function PlansScreen({ navigation }: Props) {
   const { plans, deletePlan } = useAppData();
-  const { accent } = useSettings();
+  const { accent, colors, typography, shadow } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, typography, shadow.card), [colors, typography, shadow]);
   const insets = useSafeAreaInsets();
 
   return (
@@ -64,7 +65,8 @@ export default function PlansScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: Colors, typography: Typography, cardShadow: object) {
+  return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
-    ...shadow.card,
+    ...cardShadow,
   },
   emptyText: { ...typography.title, textAlign: 'center' },
   emptySubtext: { ...typography.body, marginTop: spacing.xs, textAlign: 'center' },
@@ -105,4 +107,5 @@ const styles = StyleSheet.create({
     left: spacing.md,
     right: spacing.md,
   },
-});
+  });
+}

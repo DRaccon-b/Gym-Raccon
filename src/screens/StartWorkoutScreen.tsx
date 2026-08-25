@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useAppData } from '../context/AppDataContext';
 import { EnergyLevel } from '../utils/workoutHistory';
 import GradientButton from '../components/GradientButton';
-import { colors, radius, spacing } from '../theme';
+import { radius, spacing, Colors } from '../theme';
 import { useSettings } from '../context/SettingsContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'StartWorkout'>;
@@ -19,7 +19,8 @@ const ENERGY_OPTIONS: { value: EnergyLevel; emoji: string; label: string; hint: 
 export default function StartWorkoutScreen({ route, navigation }: Props) {
   const { planId } = route.params;
   const { plans } = useAppData();
-  const { accent } = useSettings();
+  const { accent, colors } = useSettings();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const plan = plans.find((p) => p.id === planId);
 
   const [energy, setEnergy] = useState<EnergyLevel>('weak');
@@ -100,7 +101,8 @@ export default function StartWorkoutScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: Colors) {
+  return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingBottom: 48 },
   sectionTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginTop: 16, marginBottom: 12 },
@@ -139,4 +141,5 @@ const styles = StyleSheet.create({
   exerciseChipText: { color: colors.textPrimary, fontSize: 15 },
   exerciseChipTextSelected: { fontWeight: '700' },
   emptyText: { color: colors.textSecondary, textAlign: 'center', marginTop: 40 },
-});
+  });
+}

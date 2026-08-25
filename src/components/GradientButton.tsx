@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, StyleSheet, ViewStyle, StyleProp, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { gradients, radius, shadow, typography, colors } from '../theme';
+import { gradients, radius, Colors, Typography } from '../theme';
 import { useSettings } from '../context/SettingsContext';
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -27,7 +27,8 @@ export default function GradientButton({
   style,
   disabled,
 }: Props) {
-  const { accent } = useSettings();
+  const { accent, colors, typography, shadow } = useSettings();
+  const styles = useMemo(() => makeStyles(colors, typography, shadow.glow), [colors, typography, shadow]);
   const colorsSet = variant === 'success' ? gradients.success : accent.gradient;
   const glowColor = variant === 'success' ? colors.success : accent.color;
   const webGlow: StyleProp<ViewStyle> =
@@ -59,17 +60,19 @@ export default function GradientButton({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    borderRadius: radius.lg,
-    ...shadow.glow,
-  },
-  disabled: { opacity: 0.5 },
-  gradient: {
-    borderRadius: radius.lg,
-    paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: { ...typography.button, color: colors.textPrimary },
-});
+function makeStyles(colors: Colors, typography: Typography, glowShadow: object) {
+  return StyleSheet.create({
+    wrapper: {
+      borderRadius: radius.lg,
+      ...glowShadow,
+    },
+    disabled: { opacity: 0.5 },
+    gradient: {
+      borderRadius: radius.lg,
+      paddingVertical: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    label: { ...typography.button, color: colors.textPrimary },
+  });
+}
