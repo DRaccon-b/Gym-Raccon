@@ -12,7 +12,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
   const { accent } = useSettings();
 
   return (
-    <View style={[styles.wrapper, { paddingBottom: insets.bottom }]}>
+    <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 16) }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
