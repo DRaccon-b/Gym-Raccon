@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, PanResponder } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, PanResponder, Platform } from 'react-native';
 import { Exercise } from '../types';
 import { colors, radius } from '../theme';
 import ExercisePhotoPicker from './ExercisePhotoPicker';
@@ -41,6 +41,9 @@ export default function DraggableExerciseList({
   function makePanResponder(id: string) {
     return PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: () => {
         dragIndexRef.current = orderRef.current.findIndex((e) => e.id === id);
         dragY.setValue(0);
@@ -105,7 +108,10 @@ export default function DraggableExerciseList({
               },
             ]}
           >
-            <View {...panResponders.current[ex.id].panHandlers} style={styles.dragHandle}>
+            <View
+              {...panResponders.current[ex.id].panHandlers}
+              style={[styles.dragHandle, Platform.OS === 'web' && webDragHandleStyle]}
+            >
               <Text style={styles.dragHandleText}>⠿</Text>
             </View>
             <ExercisePhotoPicker
@@ -128,6 +134,9 @@ export default function DraggableExerciseList({
     </View>
   );
 }
+
+const webDragHandleStyle =
+  Platform.OS === 'web' ? ({ touchAction: 'none', userSelect: 'none', cursor: 'grab' } as any) : {};
 
 const styles = StyleSheet.create({
   row: {
