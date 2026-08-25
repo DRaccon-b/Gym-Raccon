@@ -30,7 +30,7 @@ const VOLUME_PERIODS: { value: VolumePeriod; label: string }[] = [
 
 export default function ProgressScreen() {
   const { sessions } = useAppData();
-  const { showVolume } = useSettings();
+  const { showVolume, accent } = useSettings();
   const { width } = useWindowDimensions();
   const exerciseNames = useMemo(() => getLoggedExerciseNames(sessions), [sessions]);
   const [selected, setSelected] = useState<string | undefined>(exerciseNames[0]);
@@ -69,7 +69,10 @@ export default function ProgressScreen() {
         {exerciseNames.map((name) => (
           <TouchableOpacity
             key={name}
-            style={[styles.chip, name === activeName && styles.chipSelected]}
+            style={[
+              styles.chip,
+              name === activeName && { backgroundColor: accent.color, borderColor: accent.color },
+            ]}
             onPress={() => setSelected(name)}
           >
             <Text style={[styles.chipText, name === activeName && styles.chipTextSelected]}>
@@ -113,14 +116,14 @@ export default function ProgressScreen() {
               <Text style={styles.chartTitle}>Gewicht &amp; Wiederholungen im Top-Satz</Text>
               <LineChart
                 series={[
-                  { values: progress.map((p) => p.maxWeight), color: colors.accent },
+                  { values: progress.map((p) => p.maxWeight), color: accent.color },
                   { values: progress.map((p) => p.topSetReps), color: colors.success },
                 ]}
                 width={width - 64}
               />
               <View style={styles.legendRow}>
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendDot, { backgroundColor: colors.accent }]} />
+                  <View style={[styles.legendDot, { backgroundColor: accent.color }]} />
                   <Text style={styles.legendText}>Gewicht ({latest.maxWeight} kg)</Text>
                 </View>
                 <View style={styles.legendItem}>
@@ -152,7 +155,10 @@ export default function ProgressScreen() {
                         key={opt.value}
                         style={[
                           styles.volumeChipCompact,
-                          volumePeriod === opt.value && styles.volumeChipSelected,
+                          volumePeriod === opt.value && {
+                            backgroundColor: accent.color,
+                            borderColor: accent.color,
+                          },
                         ]}
                         onPress={() => setVolumePeriod(opt.value)}
                       >
@@ -197,7 +203,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  volumeChipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
   volumeChipTextCompact: { color: colors.textMuted, fontSize: 10, fontWeight: '600' },
   volumeChipTextSelected: { color: colors.textPrimary },
   chipRow: { flexGrow: 0, paddingVertical: 12, paddingLeft: 16 },
@@ -210,7 +215,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  chipSelected: { backgroundColor: colors.accent, borderColor: colors.accent },
   chipText: { color: colors.textSecondary, fontSize: 14, fontWeight: '600' },
   chipTextSelected: { color: colors.textPrimary },
   content: { padding: spacing.md, paddingTop: 4, gap: spacing.md },

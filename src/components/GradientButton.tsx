@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { gradients, radius, shadow, typography, colors } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = {
   label: string;
@@ -18,7 +19,8 @@ export default function GradientButton({
   style,
   disabled,
 }: Props) {
-  const colorsSet = variant === 'success' ? gradients.success : gradients.accent;
+  const { accent } = useSettings();
+  const colorsSet = variant === 'success' ? gradients.success : accent.gradient;
   return (
     <TouchableOpacity
       onPress={onPress}

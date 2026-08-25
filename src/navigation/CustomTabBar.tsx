@@ -3,11 +3,13 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { colors, spacing } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 const TAB_WIDTH = 92;
 
 export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { accent } = useSettings();
 
   return (
     <View style={[styles.wrapper, { paddingBottom: insets.bottom }]}>
@@ -20,7 +22,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
           const { options } = descriptors[route.key];
           const label = (options.title ?? route.name) as string;
           const focused = state.index === index;
-          const color = focused ? colors.accent : colors.textMuted;
+          const color = focused ? accent.color : colors.textMuted;
 
           function handlePress() {
             const event = navigation.emit({
@@ -44,7 +46,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
               <Text style={[styles.label, { color }]} numberOfLines={1}>
                 {label}
               </Text>
-              {focused && <View style={styles.indicator} />}
+              {focused && <View style={[styles.indicator, { backgroundColor: accent.color }]} />}
             </TouchableOpacity>
           );
         })}
@@ -75,6 +77,5 @@ const styles = StyleSheet.create({
     width: 24,
     height: 3,
     borderRadius: 2,
-    backgroundColor: colors.accent,
   },
 });

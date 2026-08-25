@@ -6,12 +6,14 @@ import { useAppData } from '../context/AppDataContext';
 import { colors, radius, spacing, typography } from '../theme';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PlanDetail'>;
 
 export default function PlanDetailScreen({ route, navigation }: Props) {
   const { planId } = route.params;
   const { plans } = useAppData();
+  const { accent } = useSettings();
   const plan = plans.find((p) => p.id === planId);
 
   if (!plan) {
@@ -35,7 +37,7 @@ export default function PlanDetailScreen({ route, navigation }: Props) {
               style={styles.editButton}
               onPress={() => navigation.navigate('CreatePlan', { planId: plan.id })}
             >
-              <Text style={styles.editButtonText}>Bearbeiten</Text>
+              <Text style={[styles.editButtonText, { color: accent.color }]}>Bearbeiten</Text>
             </TouchableOpacity>
           </View>
         }
@@ -84,7 +86,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  editButtonText: { color: colors.accent, fontSize: 13, fontWeight: '700' },
+  editButtonText: { fontSize: 13, fontWeight: '700' },
   cardRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
   thumb: { width: 48, height: 48, borderRadius: radius.md },
   thumbPlaceholder: {

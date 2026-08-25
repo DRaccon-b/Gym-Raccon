@@ -6,6 +6,7 @@ import { useAppData } from '../context/AppDataContext';
 import { EnergyLevel } from '../utils/workoutHistory';
 import GradientButton from '../components/GradientButton';
 import { colors, radius, spacing } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'StartWorkout'>;
 
@@ -18,6 +19,7 @@ const ENERGY_OPTIONS: { value: EnergyLevel; emoji: string; label: string; hint: 
 export default function StartWorkoutScreen({ route, navigation }: Props) {
   const { planId } = route.params;
   const { plans } = useAppData();
+  const { accent } = useSettings();
   const plan = plans.find((p) => p.id === planId);
 
   const [energy, setEnergy] = useState<EnergyLevel>('weak');
@@ -48,7 +50,10 @@ export default function StartWorkoutScreen({ route, navigation }: Props) {
       {ENERGY_OPTIONS.map((opt) => (
         <TouchableOpacity
           key={opt.value}
-          style={[styles.energyCard, energy === opt.value && styles.energyCardSelected]}
+          style={[
+            styles.energyCard,
+            energy === opt.value && { borderColor: accent.color, backgroundColor: accent.glow },
+          ]}
           onPress={() => setEnergy(opt.value)}
         >
           <Text style={styles.energyEmoji}>{opt.emoji}</Text>
@@ -56,7 +61,9 @@ export default function StartWorkoutScreen({ route, navigation }: Props) {
             <Text style={styles.energyLabel}>{opt.label}</Text>
             <Text style={styles.energyHint}>{opt.hint}</Text>
           </View>
-          {energy === opt.value && <Text style={styles.checkmark}>✓</Text>}
+          {energy === opt.value && (
+            <Text style={[styles.checkmark, { color: accent.color }]}>✓</Text>
+          )}
         </TouchableOpacity>
       ))}
 
@@ -64,7 +71,10 @@ export default function StartWorkoutScreen({ route, navigation }: Props) {
       {plan.exercises.map((ex) => (
         <TouchableOpacity
           key={ex.id}
-          style={[styles.exerciseChip, startExerciseId === ex.id && styles.exerciseChipSelected]}
+          style={[
+            styles.exerciseChip,
+            startExerciseId === ex.id && { borderColor: accent.color, backgroundColor: accent.glow },
+          ]}
           onPress={() => setStartExerciseId(ex.id)}
         >
           {ex.photoUri ? (
@@ -104,11 +114,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
   },
-  energyCardSelected: { borderColor: colors.accent, backgroundColor: colors.accentGlow },
   energyEmoji: { fontSize: 26, marginRight: 14 },
   energyLabel: { color: colors.textPrimary, fontSize: 16, fontWeight: '600' },
   energyHint: { color: colors.textSecondary, fontSize: 13, marginTop: 2 },
-  checkmark: { color: colors.accent, fontSize: 18, fontWeight: '700' },
+  checkmark: { fontSize: 18, fontWeight: '700' },
   exerciseChip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -127,7 +136,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  exerciseChipSelected: { borderColor: colors.accent, backgroundColor: colors.accentGlow },
   exerciseChipText: { color: colors.textPrimary, fontSize: 15 },
   exerciseChipTextSelected: { fontWeight: '700' },
   emptyText: { color: colors.textSecondary, textAlign: 'center', marginTop: 40 },

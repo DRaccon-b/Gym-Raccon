@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors, radius } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = {
   value: number;
@@ -23,6 +24,8 @@ export default function NumberStepperInput({
   suffix,
   decimals = 0,
 }: Props) {
+  const { accent } = useSettings();
+
   function clamp(next: number): number {
     return Math.round(Math.max(min, next) * 100) / 100;
   }
@@ -39,7 +42,7 @@ export default function NumberStepperInput({
         onPress={() => onChange(clamp(value - step))}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Text style={styles.stepButtonText}>−</Text>
+        <Text style={[styles.stepButtonText, { color: accent.color }]}>−</Text>
       </TouchableOpacity>
 
       <View style={styles.valueBox}>
@@ -58,7 +61,7 @@ export default function NumberStepperInput({
         onPress={() => onChange(clamp(value + step))}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Text style={styles.stepButtonText}>+</Text>
+        <Text style={[styles.stepButtonText, { color: accent.color }]}>+</Text>
       </TouchableOpacity>
     </View>
   );
@@ -88,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepButtonText: { color: colors.accent, fontSize: 20, fontWeight: '700', lineHeight: 22 },
+  stepButtonText: { fontSize: 20, fontWeight: '700', lineHeight: 22 },
   valueBox: {
     width: 64,
     flexShrink: 0,

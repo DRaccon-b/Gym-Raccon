@@ -1,4 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AccentKey, DEFAULT_ACCENT_KEY, ACCENT_THEMES } from '../theme';
+
+const ACCENT_KEY_STORAGE_KEY = '@gym_raccon/accent_color';
 
 const REST_SECONDS_KEY = '@gym_raccon/rest_seconds';
 const DEFAULT_REST_SECONDS = 90;
@@ -23,6 +26,15 @@ export async function loadShowVolume(): Promise<boolean> {
 
 export async function saveShowVolume(value: boolean): Promise<void> {
   await AsyncStorage.setItem(SHOW_VOLUME_KEY, String(value));
+}
+
+export async function loadAccentKey(): Promise<AccentKey> {
+  const raw = await AsyncStorage.getItem(ACCENT_KEY_STORAGE_KEY);
+  return raw && raw in ACCENT_THEMES ? (raw as AccentKey) : DEFAULT_ACCENT_KEY;
+}
+
+export async function saveAccentKey(key: AccentKey): Promise<void> {
+  await AsyncStorage.setItem(ACCENT_KEY_STORAGE_KEY, key);
 }
 
 export { DEFAULT_REST_SECONDS, DEFAULT_SHOW_VOLUME };

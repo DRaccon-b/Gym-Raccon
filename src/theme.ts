@@ -21,6 +21,68 @@ export const gradients = {
   surface: ['#1f2330', '#161922'] as const,
 };
 
+export type AccentKey = 'orange' | 'blue' | 'green' | 'yellow' | 'red';
+
+export type AccentTheme = {
+  key: AccentKey;
+  label: string;
+  swatch: string;
+  color: string;
+  dim: string;
+  glow: string;
+  gradient: readonly [string, string, string];
+};
+
+export const ACCENT_THEMES: Record<AccentKey, AccentTheme> = {
+  orange: {
+    key: 'orange',
+    label: 'Orange',
+    swatch: '#ff5a3c',
+    color: '#ff5a3c',
+    dim: '#c8452e',
+    glow: 'rgba(255, 90, 60, 0.18)',
+    gradient: ['#ff7a52', '#ff5a3c', '#e2431f'],
+  },
+  blue: {
+    key: 'blue',
+    label: 'Blau',
+    swatch: '#3b82f6',
+    color: '#3b82f6',
+    dim: '#2563eb',
+    glow: 'rgba(59, 130, 246, 0.18)',
+    gradient: ['#60a5fa', '#3b82f6', '#1d4ed8'],
+  },
+  green: {
+    key: 'green',
+    label: 'Grün',
+    swatch: '#22c55e',
+    color: '#22c55e',
+    dim: '#16a34a',
+    glow: 'rgba(34, 197, 94, 0.18)',
+    gradient: ['#4ade80', '#22c55e', '#15803d'],
+  },
+  yellow: {
+    key: 'yellow',
+    label: 'Gelb',
+    swatch: '#eab308',
+    color: '#eab308',
+    dim: '#ca8a04',
+    glow: 'rgba(234, 179, 8, 0.18)',
+    gradient: ['#facc15', '#eab308', '#a16207'],
+  },
+  red: {
+    key: 'red',
+    label: 'Rot',
+    swatch: '#ef4444',
+    color: '#ef4444',
+    dim: '#dc2626',
+    glow: 'rgba(239, 68, 68, 0.18)',
+    gradient: ['#f87171', '#ef4444', '#b91c1c'],
+  },
+};
+
+export const DEFAULT_ACCENT_KEY: AccentKey = 'orange';
+
 export const spacing = {
   xs: 4,
   sm: 8,

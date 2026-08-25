@@ -8,11 +8,13 @@ import { APP_VERSION } from '../constants/version';
 import { colors, radius, spacing, typography, shadow } from '../theme';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Plans'>;
 
 export default function PlansScreen({ navigation }: Props) {
   const { plans, deletePlan } = useAppData();
+  const { accent } = useSettings();
   const insets = useSafeAreaInsets();
 
   return (
@@ -41,7 +43,7 @@ export default function PlansScreen({ navigation }: Props) {
             onLongPress={() => deletePlan(item.id)}
           >
             <Card style={styles.cardRow}>
-              <View style={styles.cardIcon}>
+              <View style={[styles.cardIcon, { backgroundColor: accent.glow }]}>
                 <Text style={{ fontSize: 20 }}>🔥</Text>
               </View>
               <View style={{ flex: 1 }}>
@@ -78,7 +80,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.md,
-    backgroundColor: colors.accentGlow,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -15,6 +15,7 @@ import { Exercise, WorkoutPlan } from '../types';
 import ExercisePhotoPicker from '../components/ExercisePhotoPicker';
 import GradientButton from '../components/GradientButton';
 import { colors, radius, spacing } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePlan'>;
 
@@ -24,6 +25,7 @@ function makeId(): string {
 
 export default function CreatePlanScreen({ navigation, route }: Props) {
   const { plans, addPlan, updatePlan } = useAppData();
+  const { accent } = useSettings();
   const editingPlanId = route.params?.planId;
   const existingPlan = editingPlanId ? plans.find((p) => p.id === editingPlanId) : undefined;
 
@@ -113,7 +115,10 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
       {exercises.map((ex) => (
         <View
           key={ex.id}
-          style={[styles.exerciseRow, editingExerciseId === ex.id && styles.exerciseRowEditing]}
+          style={[
+            styles.exerciseRow,
+            editingExerciseId === ex.id && { borderColor: accent.color },
+          ]}
         >
           <ExercisePhotoPicker
             photoUri={ex.photoUri}
@@ -126,15 +131,17 @@ export default function CreatePlanScreen({ navigation, route }: Props) {
             <Text style={styles.editHint}>Antippen zum Bearbeiten</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleRemoveExercise(ex.id)}>
-            <Text style={styles.removeText}>Entfernen</Text>
+            <Text style={[styles.removeText, { color: accent.color }]}>Entfernen</Text>
           </TouchableOpacity>
         </View>
       ))}
 
       <View style={styles.addExerciseBox}>
         {editingExerciseId && (
-          <View style={styles.editingBanner}>
-            <Text style={styles.editingBannerText}>Übung wird bearbeitet</Text>
+          <View style={[styles.editingBanner, { backgroundColor: accent.glow }]}>
+            <Text style={[styles.editingBannerText, { color: accent.color }]}>
+              Übung wird bearbeitet
+            </Text>
             <TouchableOpacity onPress={resetExerciseForm}>
               <Text style={styles.editingBannerCancel}>Abbrechen</Text>
             </TouchableOpacity>
@@ -212,10 +219,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'transparent',
   },
-  exerciseRowEditing: { borderColor: colors.accent },
   exerciseText: { color: colors.textPrimary, fontSize: 15 },
   editHint: { color: colors.textMuted, fontSize: 11, marginTop: 2 },
-  removeText: { color: colors.accent, fontSize: 13, fontWeight: '600' },
+  removeText: { fontSize: 13, fontWeight: '600' },
   addExerciseBox: {
     marginTop: 12,
     backgroundColor: colors.surfaceSunken,
@@ -228,13 +234,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: colors.accentGlow,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 4,
   },
-  editingBannerText: { color: colors.accent, fontSize: 13, fontWeight: '600' },
+  editingBannerText: { fontSize: 13, fontWeight: '600' },
   editingBannerCancel: { color: colors.textSecondary, fontSize: 13 },
   row: { flexDirection: 'row', gap: 12, alignItems: 'center', marginTop: 12 },
   rowItem: { flex: 1 },

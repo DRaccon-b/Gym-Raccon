@@ -4,6 +4,7 @@ import { useAppData } from '../context/AppDataContext';
 import { dateKey, getCurrentStreak, getTrainedDateKeys } from '../utils/workoutHistory';
 import Card from '../components/Card';
 import { colors, radius, spacing, typography } from '../theme';
+import { useSettings } from '../context/SettingsContext';
 
 const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const MONTH_LABELS = [
@@ -43,6 +44,7 @@ function buildMonthGrid(year: number, month: number): DayCell[][] {
 
 export default function StreakScreen() {
   const { sessions } = useAppData();
+  const { accent } = useSettings();
   const { width } = useWindowDimensions();
   const today = useMemo(() => new Date(), []);
   const [viewDate, setViewDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -121,7 +123,7 @@ export default function StreakScreen() {
                 style={[
                   styles.dayCell,
                   { width: cellSize, height: cellSize },
-                  trained && styles.dayCellTrained,
+                  trained && { backgroundColor: accent.color, borderColor: accent.color },
                   isToday && styles.dayCellToday,
                 ]}
               >
@@ -172,7 +174,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  dayCellTrained: { backgroundColor: colors.accent, borderColor: colors.accent },
   dayCellToday: { borderWidth: 2, borderColor: colors.textPrimary },
   dayNumber: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
   dayNumberTrained: { color: colors.textPrimary },

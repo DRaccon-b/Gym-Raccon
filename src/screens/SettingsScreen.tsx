@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Switch, ScrollView } from 'react-native';
 import { useSettings } from '../context/SettingsContext';
 import { useAppData } from '../context/AppDataContext';
 import { APP_VERSION } from '../constants/version';
 import Card from '../components/Card';
+import AccentColorPicker from '../components/AccentColorPicker';
 import { colors, radius, spacing, typography } from '../theme';
 
 const STEP = 15;
@@ -19,7 +20,8 @@ function formatSeconds(seconds: number): string {
 }
 
 export default function SettingsScreen() {
-  const { restSeconds, setRestSeconds, showVolume, setShowVolume } = useSettings();
+  const { restSeconds, setRestSeconds, showVolume, setShowVolume, accentKey, accent, setAccentKey } =
+    useSettings();
   const { clearAllData } = useAppData();
 
   function handleClearAll() {
@@ -59,19 +61,25 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Satzpause</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Text style={styles.sectionTitle}>Design</Text>
+      <Text style={styles.sectionSubtitle}>Wähle die Akzentfarbe der App.</Text>
+      <Card>
+        <AccentColorPicker value={accentKey} onChange={setAccentKey} />
+      </Card>
+
+      <Text style={[styles.sectionTitle, { marginTop: 40 }]}>Satzpause</Text>
       <Text style={styles.sectionSubtitle}>
         Wie lange soll der Timer zwischen den Sätzen standardmäßig laufen?
       </Text>
 
       <Card style={styles.stepper}>
         <TouchableOpacity style={styles.stepperButton} onPress={decrease}>
-          <Text style={styles.stepperButtonText}>−</Text>
+          <Text style={[styles.stepperButtonText, { color: accent.color }]}>−</Text>
         </TouchableOpacity>
         <Text style={styles.stepperValue}>{formatSeconds(restSeconds)}</Text>
         <TouchableOpacity style={styles.stepperButton} onPress={increase}>
-          <Text style={styles.stepperButtonText}>+</Text>
+          <Text style={[styles.stepperButtonText, { color: accent.color }]}>+</Text>
         </TouchableOpacity>
       </Card>
 
@@ -86,7 +94,7 @@ export default function SettingsScreen() {
         <Switch
           value={showVolume}
           onValueChange={setShowVolume}
-          trackColor={{ false: colors.surfaceRaised, true: colors.accent }}
+          trackColor={{ false: colors.surfaceRaised, true: accent.color }}
           thumbColor={colors.textPrimary}
         />
       </Card>
@@ -100,12 +108,13 @@ export default function SettingsScreen() {
       </TouchableOpacity>
 
       <Text style={styles.version}>{APP_VERSION}</Text>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, padding: spacing.md },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.md, paddingBottom: 48 },
   sectionTitle: { ...typography.title, fontSize: 20, marginTop: 8 },
   sectionSubtitle: { ...typography.body, marginTop: 6, marginBottom: 24 },
   stepper: {
@@ -125,7 +134,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  stepperButtonText: { color: colors.accent, fontSize: 24, fontWeight: '700' },
+  stepperButtonText: { fontSize: 24, fontWeight: '700' },
   stepperValue: {
     color: colors.textPrimary,
     fontSize: 28,
