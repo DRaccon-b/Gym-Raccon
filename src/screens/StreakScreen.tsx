@@ -213,10 +213,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   dayCellToday: { borderWidth: 2, borderColor: colors.textPrimary },
-  dayCellRest: { backgroundColor: 'rgba(96, 165, 250, 0.18)', borderColor: '#60a5fa' },
+  dayCellRest: { backgroundColor: 'rgba(167, 139, 250, 0.18)', borderColor: '#a78bfa' },
   dayNumber: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
   dayNumberTrained: { color: colors.textPrimary },
-  dayNumberRest: { color: '#60a5fa' },
+  dayNumberRest: { color: '#a78bfa' },
   restDayButton: {
     marginBottom: spacing.lg,
     backgroundColor: colors.surface,
@@ -227,10 +227,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   restDayButtonActive: {
-    backgroundColor: 'rgba(96, 165, 250, 0.15)',
-    borderColor: '#60a5fa',
+    backgroundColor: 'rgba(167, 139, 250, 0.15)',
+    borderColor: '#a78bfa',
   },
   restDayButtonDisabled: { opacity: 0.5 },
   restDayButtonText: { color: colors.textSecondary, fontSize: 14, fontWeight: '600' },
-  restDayButtonTextActive: { color: '#60a5fa' },
+  restDayButtonTextActive: { color: '#a78bfa' },
 });
